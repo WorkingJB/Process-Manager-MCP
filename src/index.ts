@@ -388,7 +388,7 @@ async function handleGetProcess(args: any) {
   const processId = args.processId as string;
 
   const result = (await authManager.apiRequest(
-    `/promapp/Api/v1/Processes/${processId}`
+    `/Api/v1/Processes/${processId}`
   )) as ProcessResponse;
 
   return {

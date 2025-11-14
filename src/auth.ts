@@ -24,6 +24,7 @@ export class AuthManager {
 
   /**
    * Get the site base URL for the configured region and site name
+   * Used for OAuth2 authentication, search token, and API calls
    */
   private getSiteBaseUrl(): string {
     const endpoints = REGIONAL_ENDPOINTS[this.config.region];
@@ -32,6 +33,7 @@ export class AuthManager {
 
   /**
    * Get the search base URL for the configured region
+   * Used only for the actual search requests (different domain)
    */
   private getSearchBaseUrl(): string {
     return REGIONAL_ENDPOINTS[this.config.region].searchUrl;
@@ -167,8 +169,11 @@ export class AuthManager {
       body?: any;
     } = {}
   ): Promise<any> {
+    console.error('[API] Getting site token...');
     const siteToken = await this.getSiteToken();
     const url = `${this.getSiteBaseUrl()}${endpoint}`;
+
+    console.error(`[API] Making API request to: ${url}`);
 
     const response = await fetch(url, {
       method: options.method || 'GET',
@@ -182,11 +187,14 @@ export class AuthManager {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[API] API request failed with status ${response.status}`);
+      console.error(`[API] Error response: ${errorText}`);
       throw new Error(
         `API request failed: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
+    console.error('[API] API request successful');
     return response.json();
   }
 
