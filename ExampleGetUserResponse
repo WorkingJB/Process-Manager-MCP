@@ -1,0 +1,56 @@
+{
+    "itemsPerPage": 200,
+    "startIndex": 1,
+    "Resources": [
+        {
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:User"
+            ],
+            "userName": "andrea.mathias@nintex.com",
+            "name": {
+                "formatted": null,
+                "familyName": "Owner",
+                "givenName": "Training",
+                "middleName": null,
+                "honorificPrefix": null,
+                "honorificSuffix": null
+            },
+            "displayName": null,
+            "nickName": null,
+            "profileUrl": null,
+            "title": null,
+            "userType": null,
+            "preferredLanguage": null,
+            "locale": null,
+            "timezone": null,
+            "active": true,
+            "password": null,
+            "emails": [
+                {
+                    "type": null,
+                    "primary": true,
+                    "value": "andrea.mathias@nintex.com",
+                    "display": null,
+                    "$ref": null
+                }
+            ],
+            "photos": null,
+            "entitlements": null,
+            "groups": null,
+            "roles": [],
+            "id": "71",
+            "externalId": null,
+            "meta": {
+                "resourceType": null,
+                "created": "2025-10-29T23:42:11Z",
+                "lastModified": null,
+                "location": null,
+                "version": null
+            }
+        }
+    ],
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "totalResults": 1
+}
