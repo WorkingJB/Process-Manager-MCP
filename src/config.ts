@@ -1,0 +1,220 @@
+/**
+ * Configuration and type definitions for Process Manager MCP Server
+ */
+
+export interface ProcessManagerConfig {
+  region: Region;
+  siteName: string;
+  username: string;
+  password: string;
+  scimApiKey?: string;
+}
+
+export type Region = 'demo' | 'us' | 'ca' | 'eu' | 'au' | 'ae';
+
+export interface RegionalEndpoints {
+  siteUrl: string;
+  searchUrl: string;
+}
+
+/**
+ * Regional endpoint mappings for Process Manager
+ */
+export const REGIONAL_ENDPOINTS: Record<Region, RegionalEndpoints> = {
+  demo: {
+    siteUrl: 'https://demo.promapp.com',
+    searchUrl: 'https://prd-aus-sch.promapp.io',
+  },
+  us: {
+    siteUrl: 'https://us.promapp.com',
+    searchUrl: 'https://prd-wus-sch.promapp.io',
+  },
+  ca: {
+    siteUrl: 'https://ca.promapp.com',
+    searchUrl: 'https://prd-cac-sch.promapp.io',
+  },
+  eu: {
+    siteUrl: 'https://eu.promapp.com',
+    searchUrl: 'https://prd-neu-sch.promapp.io',
+  },
+  au: {
+    siteUrl: 'https://au.promapp.com',
+    searchUrl: 'https://prd-aus-sch.promapp.io',
+  },
+  ae: {
+    siteUrl: 'https://ae.promapp.com',
+    searchUrl: 'https://prd-ane-sch.promapp.io',
+  },
+};
+
+/**
+ * Search entity types
+ */
+export enum EntityType {
+  All = 0,
+  ProcessesOnly = 1,
+  DocumentsOnly = 2,
+  PoliciesOnly = 3,
+  ProcedureOnlyProcesses = 4,
+  SuggestedProcesses = 5,
+  Groups = 6,
+}
+
+/**
+ * Process search field filters
+ */
+export enum ProcessSearchField {
+  All = 0,
+  Title = 1,
+  Activity = 2,
+  Task = 3,
+  Notes = 4,
+  Objectives = 5,
+  Background = 6,
+  SearchKeywords = 7,
+}
+
+export enum SearchMatchType {
+  Any = 0,
+  All = 1,
+  Exact = 2,
+}
+
+/**
+ * Site authentication response
+ */
+export interface SiteAuthResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+/**
+ * Search authentication response
+ */
+export interface SearchAuthResponse {
+  Status: string;
+  Message: string; // JWT token
+}
+
+/**
+ * Search result item
+ */
+export interface SearchResultItem {
+  Name: string;
+  EntityType: string;
+  ProcessStateMetadata: any[];
+  ItemUrl: string;
+  BreadCrumbGroupNames: string[];
+  ProcessGroupUrl: string;
+  LinkedDocument: any;
+  AllowEdit: boolean;
+  IsFavourite: boolean;
+  DocumentUniqueId: string | null;
+  ProcessUniqueId: string | null;
+  ProcessGroupUniqueId: string | null;
+  HighLights: Record<string, string[]>;
+}
+
+/**
+ * Search response
+ */
+export interface SearchResponse {
+  success: boolean;
+  response: SearchResultItem[];
+  paging: {
+    TotalItemCount: number;
+    LastItemOnPage: number;
+    IsLastPage: boolean;
+    PageNumber: number;
+  };
+  userFilter: any;
+}
+
+/**
+ * Process detail response
+ */
+export interface ProcessResponse {
+  processJson: {
+    Id: number;
+    UniqueId: string;
+    Name: string;
+    StateId: number;
+    Objective: string;
+    OwnerId: number;
+    ExpertId: number;
+    GroupId: number;
+    GroupUniqueId: string;
+    Background: string;
+    Expert: string;
+    Owner: string;
+    Group: string;
+    State: string;
+    ProcessProcedures: {
+      Activity: Activity[];
+    };
+    [key: string]: any;
+  };
+}
+
+export interface Activity {
+  Id: number;
+  UniqueId: string;
+  Number: string;
+  Text: string;
+  ChildProcessProcedures?: {
+    Task?: Task[];
+  };
+  [key: string]: any;
+}
+
+export interface Task {
+  Id: number;
+  UniqueId: string;
+  Number: string;
+  Text: string;
+  [key: string]: any;
+}
+
+/**
+ * SCIM User response
+ */
+export interface ScimUserResponse {
+  itemsPerPage: number;
+  startIndex: number;
+  totalResults: number;
+  schemas: string[];
+  Resources: ScimUser[];
+}
+
+export interface ScimUser {
+  schemas: string[];
+  userName: string;
+  name: {
+    formatted: string | null;
+    familyName: string;
+    givenName: string;
+    middleName: string | null;
+    honorificPrefix: string | null;
+    honorificSuffix: string | null;
+  };
+  displayName: string | null;
+  active: boolean;
+  emails: Array<{
+    type: string | null;
+    primary: boolean;
+    value: string;
+    display: string | null;
+  }>;
+  id: string;
+  externalId: string | null;
+  meta: {
+    resourceType: string | null;
+    created: string;
+    lastModified: string | null;
+    location: string | null;
+    version: string | null;
+  };
+}
+
+export const SCIM_API_BASE_URL = 'https://api.promapp.com/api/scim';

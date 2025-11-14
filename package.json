@@ -1,0 +1,34 @@
+{
+  "name": "process-manager-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Nintex Process Manager - Connect AI applications to Process Manager data",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "process-manager-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "process-manager",
+    "nintex",
+    "promapp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
