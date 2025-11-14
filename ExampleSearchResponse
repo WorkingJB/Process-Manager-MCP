@@ -1,0 +1,666 @@
+{
+    "success": true,
+    "response": [
+        {
+            "Name": "JB Example for Report 1",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/ca600c2d-8aae-4a83-97cf-c1994ffbdf54?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management",
+                "Process Intelligence",
+                "JB's Reporting Test Bed"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/623453d4-458e-42bc-b4a5-abe889c2a877?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "ca600c2d-8aae-4a83-97cf-c1994ffbdf54",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "SearchableName": [
+                    "JB Example for Report 1"
+                ]
+            }
+        },
+        {
+            "Name": "[Under review] Develop a component for the Style Guide",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/015509ea-022b-4777-b4c4-99998d92f44e?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management",
+                "UXD"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/6868973b-5059-4b9b-8e8e-4004f4830d0c?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "015509ea-022b-4777-b4c4-99998d92f44e",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(2.0.b) Define what examples should be created in the Style Guide website",
+                    "(6.0.a) UX designer will advise of the examples that should be added to the style guide.",
+                    "(6.0.b) Developer to add requested examples to the style guide",
+                    "(6.0.c) Developer to provide UX Designer with the slugs for the requested examples"
+                ],
+                "Notes": [
+                    "How many story book examples should I create",
+                    "By our convention that example is called Basic example",
+                    "The example will show [example not found], this is fine",
+                    "Examples are not a one to one ratio to a component — they can have multiple examples",
+                    "An example of this is the BasePill component"
+                ],
+                "Activities": [
+                    "(4.0) Add Storybook examples",
+                    "(6.0) Add examples to the Style Guide website",
+                    "(8.0) Add example content"
+                ]
+            }
+        },
+        {
+            "Name": "DMC: New Employee Onboarding",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/e9880931-d5d0-4e38-a3db-6e5d1ee88b63?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Presales",
+                "Demo the Platform",
+                "Demo from Demo Central"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/df04e8cd-0248-4db8-96a0-624ad39c2e37?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "e9880931-d5d0-4e38-a3db-6e5d1ee88b63",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "SearchableObjective": [
+                    "Example Process for use in DMC demos"
+                ],
+                "Background": [
+                    "This is an example of a new employee onboarding process that can be used in DMC demos"
+                ]
+            }
+        },
+        {
+            "Name": "CCPA - Operates Exclusively Online, Know & Delete",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/14d2d681-8321-48d5-abea-f87c665a9e17?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Marketing",
+                "Product Marketing",
+                "Product Marketing",
+                "Process Accelerator Gallery Templates",
+                "Process Templates"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/d2c3b550-b7e5-48d7-8c6e-5917af5d4136?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "14d2d681-8321-48d5-abea-f87c665a9e17",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "SearchableObjective": [
+                    "Example: Facebook, What's App, NewEgg electronics, etc."
+                ],
+                "Notes": [
+                    "Form example",
+                    "For example, if the request is",
+                    "Examples of authenticated verification:",
+                    "Example category request email",
+                    "Example specific information request"
+                ],
+                "WebLinks": [
+                    "Example Web Form"
+                ]
+            }
+        },
+        {
+            "Name": "Setting and delivering a virtual PEiD workshop",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/c9335c4b-a3dd-43a3-b1a0-9f38b31c4968?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Sales",
+                "Regional Sales",
+                "APAC Sales"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/7f002716-79f7-410a-a559-5de18dd865d1?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "c9335c4b-a3dd-43a3-b1a0-9f38b31c4968",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Notes": [
+                    "Example: https://apacsales.workflowcloud.com/forms/27ee7b1c-dcb2-483d-a261-043d567f3c44/"
+                ],
+                "WebLinks": [
+                    "Example Attendee Report"
+                ],
+                "Information": [
+                    "Example Follow up Process Excellence in a Day - Process Manager"
+                ]
+            }
+        },
+        {
+            "Name": "The Connectors Dev to Release process ",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/333962d5-1186-4cbc-8fdd-91a7d77a4530?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Engineering",
+                "Operations, Practices and Security"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/fc55f326-cf34-4113-884f-c77424bd3787?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "333962d5-1186-4cbc-8fdd-91a7d77a4530",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(9.0.c) See Example here or see the image attached",
+                    "(4.0.b) Examples of when input from the PO is required would be:",
+                    "(4.0.c) Example attached",
+                    "(14.0.d) For example: \"This review will close on 3 March\"",
+                    "(19.0.a) (See example attached)"
+                ],
+                "WebLinks": [
+                    "Note: Refer to the Technical Content teams backlog (filtered with the connector tag) for examples of how other create their items."
+                ],
+                "Image": [
+                    "Example 7",
+                    "Example 6",
+                    "Example 8",
+                    "Example 5",
+                    "Example 9"
+                ]
+            }
+        },
+        {
+            "Name": "Copy of The Connectors Dev to Release process ",
+            "EntityType": "UnpublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/3920dce4-3f4c-4642-888c-8978c5c31431?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Engineering",
+                "Operations, Practices and Security"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/fc55f326-cf34-4113-884f-c77424bd3787?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "3920dce4-3f4c-4642-888c-8978c5c31431",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "Examples of when input from the PO is required would be:|~|\t\t\ti",
+                    "Example attached",
+                    "See Example here or see the image attached",
+                    "For example: \"This review will close on 3 March\"",
+                    "(See example attached)"
+                ],
+                "WebLinks": [
+                    "Note: Refer to the Technical Content teams backlog (filtered with the connector tag) for examples of how other create their items."
+                ],
+                "Image": [
+                    "Example 1",
+                    "Example 2",
+                    "Example 3",
+                    "Example 9",
+                    "Example 5"
+                ]
+            }
+        },
+        {
+            "Name": "NWC-G- Evidence Collection for FedRAMP Controls ",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/b8a18b82-c0f4-49af-b285-c0c3029fcb1e?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Legal",
+                "Security & Compliance"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/8dc3bce3-5440-44a5-b09f-dc41c7bedbab?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "b8a18b82-c0f4-49af-b285-c0c3029fcb1e",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Notes": [
+                    "ISV - SDLC, examples of where the security impact analysis is completed in the code development and approval process.",
+                    "ISV - signed SSP, SDLC, walkthrough of SDLC process, screenshots of examples and all tools used throughout the entire approval process, example of approval and release of code update, examples of NWC Config Managment process, how integrity is maintained, static source code scans, CCB meetings/notes, oldest ticket in CC tool",
+                    "How your internal approval process works prior to release, approval examples of code/update releases, Change Control meeting notes",
+                    "How your internal approval process works prior to release, approval examples of code/update releases, Change Control meeting notes",
+                    "ISV - signed SSP, SDLC, walkthrough of SDLC process, screenshots of examples and all tools used throughout the entire approval process, example of approval and release of code update, examples of NWC Config Mgt process, how integrity is maintained, static source code scans, CCB meetings/notes, oldest ticket in CC tool"
+                ],
+                "WebLinks": [
+                    "Example of Evidence",
+                    "Example of Evidence",
+                    "Example of Evidence",
+                    "Example of Evidence",
+                    "Example of Evidence"
+                ]
+            }
+        },
+        {
+            "Name": "CAB - Managing a successful meeting",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/350f2201-3af3-4331-8839-9d8718313597?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management",
+                "Other"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/8e74d25a-2c08-4a39-8eaa-4ddb1ffc95ee?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "350f2201-3af3-4331-8839-9d8718313597",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Notes": [
+                    "Email example, polish",
+                    "1st example:",
+                    "2nd Example:",
+                    "For example:",
+                    "Email example"
+                ],
+                "WebLinks": [
+                    "CAB summary example, in doc format",
+                    "CAB summary example, in .ppt format",
+                    "CAB summary example, in doc format",
+                    "Link to Example in powerpoint format",
+                    "Example CAB slide deck"
+                ]
+            }
+        },
+        {
+            "Name": "Update CLP Progress Deck",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/7a15d340-c0ab-4578-8382-95986a6883e8?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Finance & IT",
+                "Finance",
+                "Board of Directors",
+                "Operations Deck",
+                "Subscription Update"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/d4bd040e-bb99-46a1-8efd-6db24a2ef10d?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "7a15d340-c0ab-4578-8382-95986a6883e8",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(7.0.c) Ensure that each change is a new copy of the Progress Deck draft (example V1 vs",
+                    "(4.0.c) Update name with month name and V1 (Example: Jan_CLP_Progress_Deck_V1.xlsx)"
+                ],
+                "Guide": [
+                    "Example Closed CLP Opps"
+                ]
+            }
+        },
+        {
+            "Name": "Convert Process for Prospect - PreSales ",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/50275e33-c16e-4e53-9d9a-70c378e23b22?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Process Manager Sales Process"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/504e3c43-496c-4def-add9-8599d37b301d?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "50275e33-c16e-4e53-9d9a-70c378e23b22",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(1.0.c) Advise the prospect that only one or two example processes will be converted",
+                    "(1.0.d) Confirm that given example process is appropriate for executive level demo"
+                ],
+                "Notes": [
+                    "See attached documents for Good and Bad examples"
+                ],
+                "Information": [
+                    "Conversion Example - Good"
+                ],
+                "Image": [
+                    "Conversion - Example of Bad Process"
+                ]
+            }
+        },
+        {
+            "Name": "Conduct User Research using AI :: STANDARD",
+            "EntityType": "UnpublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/2f0b3300-d954-4cf2-9419-07b06c016b3c?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management",
+                "UXD",
+                "Product Research"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/6f9053e5-8520-4a55-9cf1-0c5c777e5ded?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "2f0b3300-d954-4cf2-9419-07b06c016b3c",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "For example, '2022-04 Process Manager in-product reporting' means you conducted this research in April of 2022."
+                ],
+                "Notes": [
+                    "The feature is something that will help partners more, for example a feature allowing users to switch tenants easily would have little impact on most customers"
+                ],
+                "WebLinks": [
+                    "Examples_Research planning",
+                    "Examples_Research scripts",
+                    "Example_Thematic analysis in Miro",
+                    "Examples_PowerPoint research summary",
+                    "Examples_UX research report"
+                ]
+            }
+        },
+        {
+            "Name": "User research process",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/15d86e03-cefb-44ec-94b2-0d5649b74628?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management",
+                "UXD"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/6868973b-5059-4b9b-8e8e-4004f4830d0c?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "15d86e03-cefb-44ec-94b2-0d5649b74628",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(2.0.a) For example, '2022-04 Process Manager in-product reporting' means you conducted this research in April of 2022."
+                ],
+                "Notes": [
+                    "The feature is something that will help partners more, for example a feature allowing users to switch tenants easily would have little impact on most customers"
+                ],
+                "WebLinks": [
+                    "Examples_Research planning",
+                    "Examples_Research scripts",
+                    "Example_Thematic analysis in Miro",
+                    "Examples_PowerPoint research summary",
+                    "Examples_UX research report"
+                ]
+            }
+        },
+        {
+            "Name": "Create a code first migration :: Stored Procedure",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/1fd28cbe-84b3-409d-baa3-406094edd3b0?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Engineering",
+                "Engineering",
+                "Process Manager",
+                "Product Development",
+                "Building",
+                "Work Instructions",
+                "Code First"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/f9b4c5ea-b122-4a27-9826-f544164c6b9d?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "1fd28cbe-84b3-409d-baa3-406094edd3b0",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Notes": [
+                    "SQL files are stored under Promapp.EF\\Scripts\\<Functions/Stored Procedures>\\*.sql  Files format is <Function/Stored Procedure name>_<Version Number>.sql Example: spGetUsers_1.sql",
+                    "Example",
+                    "Example"
+                ],
+                "Image": [
+                    "SP Migration Example 2"
+                ]
+            }
+        },
+        {
+            "Name": "Create upsell opportunity",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/3ffc7ec5-7e9e-4d6a-b3b5-9df62ad4b0ea?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Customer Success",
+                "Customer Support",
+                "General Support Processes"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/36470c59-c76a-449b-a601-e95199b4c033?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "3ffc7ec5-7e9e-4d6a-b3b5-9df62ad4b0ea",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(5.0.b) The image is an example of a filled-out form"
+                ],
+                "Image": [
+                    "example-form"
+                ]
+            }
+        },
+        {
+            "Name": "CCPA - Operates online & offline, Know & Delete",
+            "EntityType": "UnpublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/3f2bad89-5cfd-41fd-9565-e7537f5f1132?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Product Management"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/b1caabde-5b02-4e9f-9319-ac8024900445?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "3f2bad89-5cfd-41fd-9565-e7537f5f1132",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "SearchableObjective": [
+                    "Example: Best Buy, Target, etc.)"
+                ],
+                "Notes": [
+                    "Requester Form example",
+                    "Authorized Agent Request form example",
+                    "For example, if the request is|~|made over the phone, the confirmation may be given on the phone during the phone call.",
+                    "Examples of authenticated verification:",
+                    "Examples of exceptions for delete"
+                ]
+            }
+        },
+        {
+            "Name": "CCPA - Operates Online & Offline, Know & Delete",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/04695890-48f4-4ff0-8511-9ec3db36be42?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Marketing",
+                "Product Marketing",
+                "Product Marketing",
+                "Process Accelerator Gallery Templates",
+                "Process Templates"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/d2c3b550-b7e5-48d7-8c6e-5917af5d4136?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "04695890-48f4-4ff0-8511-9ec3db36be42",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "SearchableObjective": [
+                    "Example: Best Buy, Target, etc.)"
+                ],
+                "Notes": [
+                    "Example Requester Form",
+                    "Authorized Agent Request form example",
+                    "For example, if the request is",
+                    "Examples of authenticated verification:",
+                    "Examples of exceptions for delete"
+                ]
+            }
+        },
+        {
+            "Name": "Partner Termination Process",
+            "EntityType": "UnpublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/c0ee6312-d896-49ed-8bc6-607b8e8eef0b?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Channel Sales and Strategy",
+                "Partner",
+                "Partner Manager Day to Day"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/bb98c9f1-fc5f-4591-8cf1-01baa146a254?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "c0ee6312-d896-49ed-8bc6-607b8e8eef0b",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "See attached image for example email.",
+                    "See example termination letter attached."
+                ],
+                "Image": [
+                    "Example Termination Letter"
+                ]
+            }
+        },
+        {
+            "Name": "create a pull request ",
+            "EntityType": "UnpublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/429aa8e5-4acf-4524-80e4-42e1d7bb35a0?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Product",
+                "Data Science"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/5ff4a49d-8295-40f1-a2e4-94806f1423e7?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "429aa8e5-4acf-4524-80e4-42e1d7bb35a0",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Background": [
+                    "this is a try  (example process)"
+                ]
+            }
+        },
+        {
+            "Name": "Adobe Deal Fulfillment Check ",
+            "EntityType": "PublishedProcess",
+            "ProcessStateMetadata": [],
+            "ItemUrl": "https://au.promapp.com/promapp/Process/9e577a56-4edc-4fb4-94ad-610274c03e49?Area=Process",
+            "BreadCrumbGroupNames": [
+                "Nintex",
+                "Go To Market (Sales and Marketing)",
+                "Sales Operations",
+                "Orders and licencing"
+            ],
+            "ProcessGroupUrl": "https://au.promapp.com/promapp/process/group/058ce63f-8daf-49db-881f-718195534417?Area=process",
+            "LinkedDocument": null,
+            "AllowEdit": false,
+            "IsFavourite": false,
+            "DocumentUniqueId": null,
+            "ProcessUniqueId": "9e577a56-4edc-4fb4-94ad-610274c03e49",
+            "ProcessGroupUniqueId": null,
+            "HighLights": {
+                "Tasks": [
+                    "(2.0.a) Example of NintexSign SKU in an Opportunity"
+                ],
+                "Image": [
+                    "Adobe Form Example"
+                ]
+            }
+        }
+    ],
+    "paging": {
+        "TotalItemCount": 219,
+        "LastItemOnPage": 20,
+        "IsLastPage": false,
+        "PageNumber": 1
+    },
+    "userFilter": {
+        "PageNumber": 1,
+        "PageSize": 20,
+        "ProcessGroupUniqueId": "",
+        "ExcludeDescendentEntities": false,
+        "SearchCriteria": "Example",
+        "SearchMatchType": 0,
+        "IncludedTypes": [
+            1
+        ],
+        "ProcessSearchFields": [
+            0
+        ]
+    }
+}

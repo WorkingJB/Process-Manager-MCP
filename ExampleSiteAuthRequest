@@ -1,0 +1,7 @@
+curl --location 'https://demo.promapp.com//93555a16ceb24f139a6e8a40618d3f8b/oauth2/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'Cookie: .pmpauth=TQ6rUFDHRX77Zfkayqamia-nlp28wROPKJ_fgipwdtWN9m7xnbWXb4D2xNA02wyorurU3AnuyEQ6exdEtjlPnG78gKpsmbBPlho43hQy_EuGVjMETBGe6jsJihe_2dC9uf62i8bH-HdV0iC29UakmeGEZ4NfDmmSeC23ao0ylz72nottRKrSLa_L4PfK-6v8HmzzcbL-tuPfH6jjooAeoQoDkwykFDJHkmzXixDrhThk2rbX7pRCIvs03ufidsdK-CjtrpnFQj933E2H3Wsh79KGbAHqffw5xj4wYdnB9Y4zItx-ooRGzazwFoQdGJZ37g0tsoOPucHrtqynIu0kV8thV_5iYbCGIoKAKZImo37hRmXc1XCPFC3eY8Jv_Q6kPlVB7Sw3CsUbDZJLjkL783YpDazZTQe2IyT9PHa38cW3ajfMPmTohvn9H6cXuyWRSMlct_eKWrVnQ0TFOKQRPlTUl80D_9__2ecKlo5bitKVt4-C-hAsOLOaivJLIoN0cNqoMxqbjNkBOxcByh31hn-x3-qO0-P-DZxs7lqKbrdKtVzyS_h_FXfADXPe5wYNHvspLNfWXaKoBliSe1xc2KpO17kSSOtiZLZobvIOhfhJMjQi1ZUDc864SZs21lhkjC0BR-m8LKIoM_aufyJsrCDIZ_9qoNcd4temm6ZPUT7jsQc8uqyyl3TVnZOlMLxaM1EDF83ePDC-A6g8F9jl7Y7WQxtFLP148RixmdiD1LrGAHDjuZ8b49hLMsLtnuaW3NbZ8JgkmnDprTAJ405GEMmiu3sx1x-k88TTRhZjarJuIBj8; .pmplng=en; ASP.NET_SessionId=0513abelolsr1qmlmvjrshdc; TimeZoneId=Pacific+Standard+Time; UnsupportedBrowserCheck=true; __RequestVerificationToken=b81h_0ad4BJ5Q1KfsG6VCLQkmWD-_RlbAvnWzE3Gu7tZT2fAQEmkNL-fyHrdREL8mZyd-FC__HGEg0r2tmTU2KH-qNA1' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'username=jonathan.butler@nintex.com' \
+--data-urlencode 'password=Wtf1mpp?' \
+--data-urlencode 'duration=60000'
