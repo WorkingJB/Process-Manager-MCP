@@ -1,5 +1,5 @@
 Site URL to Regional Search Endpoints:
-- https://demo.promapp.com/{{siteName}} : https://prd-aus-sch.promapp.io/fullsearch?
+- https://demo.promapp.com/{{siteName}} : https://dmo-wus-sch.promapp.io/fullsearch?
 - https://us.promapp.com/{{siteName}} : https://prd-wus-sch.promapp.io/fullsearch?
 - https://ca.promapp.com/{{siteName}} : https://prd-cac-sch.promapp.io/fullsearch?
 - https://eu.promapp.com/{{siteName}} : https://prd-neu-sch.promapp.io/fullsearch?

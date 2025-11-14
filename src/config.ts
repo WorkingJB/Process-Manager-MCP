@@ -23,7 +23,7 @@ export interface RegionalEndpoints {
 export const REGIONAL_ENDPOINTS: Record<Region, RegionalEndpoints> = {
   demo: {
     siteUrl: 'https://demo.promapp.com',
-    searchUrl: 'https://prd-aus-sch.promapp.io',
+    searchUrl: 'https://dmo-wus-sch.promapp.io',
   },
   us: {
     siteUrl: 'https://us.promapp.com',

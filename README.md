@@ -181,7 +181,7 @@ The server supports all Process Manager regional endpoints:
 
 | Region | Site URL Base                | Search API Base               |
 |--------|------------------------------|-------------------------------|
-| demo   | https://demo.promapp.com     | https://prd-aus-sch.promapp.io|
+| demo   | https://demo.promapp.com     | https://dmo-wus-sch.promapp.io|
 | us     | https://us.promapp.com       | https://prd-wus-sch.promapp.io|
 | ca     | https://ca.promapp.com       | https://prd-cac-sch.promapp.io|
 | eu     | https://eu.promapp.com       | https://prd-neu-sch.promapp.io|
