@@ -49,10 +49,14 @@ export class AuthManager {
       this.siteTokenExpiry &&
       Date.now() < this.siteTokenExpiry
     ) {
+      console.error('[AUTH] Using cached site token');
       return this.siteToken;
     }
 
     const url = `${this.getSiteBaseUrl()}/oauth2/token`;
+    console.error(`[AUTH] Requesting site token from: ${url}`);
+    console.error(`[AUTH] Using username: ${this.config.username}`);
+
     const params = new URLSearchParams({
       grant_type: 'password',
       username: this.config.username,
@@ -70,6 +74,8 @@ export class AuthManager {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[AUTH] Site auth failed with status ${response.status}`);
+      console.error(`[AUTH] Error response: ${errorText}`);
       throw new Error(
         `Site authentication failed: ${response.status} ${response.statusText} - ${errorText}`
       );
@@ -80,6 +86,7 @@ export class AuthManager {
     // Set expiry to 90% of actual expiry to avoid edge cases
     this.siteTokenExpiry = Date.now() + data.expires_in * 1000 * 0.9;
 
+    console.error('[AUTH] Site token obtained successfully');
     return this.siteToken;
   }
 
@@ -95,13 +102,17 @@ export class AuthManager {
       this.searchTokenExpiry &&
       Date.now() < this.searchTokenExpiry
     ) {
+      console.error('[AUTH] Using cached search token');
       return this.searchToken;
     }
 
     // Ensure we have a valid site token first
+    console.error('[AUTH] Getting site token for search auth...');
     const siteToken = await this.getSiteToken();
 
     const url = `${this.getSiteBaseUrl()}/search/GetSearchServiceToken`;
+    console.error(`[AUTH] Requesting search token from: ${url}`);
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -111,6 +122,8 @@ export class AuthManager {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[AUTH] Search auth failed with status ${response.status}`);
+      console.error(`[AUTH] Error response: ${errorText}`);
       throw new Error(
         `Search authentication failed: ${response.status} ${response.statusText} - ${errorText}`
       );
@@ -119,6 +132,7 @@ export class AuthManager {
     const data = (await response.json()) as SearchAuthResponse;
 
     if (data.Status !== 'Success') {
+      console.error(`[AUTH] Search auth returned non-success status: ${data.Status}`);
       throw new Error(`Search authentication failed: ${data.Status}`);
     }
 
@@ -126,6 +140,7 @@ export class AuthManager {
     // Search tokens typically expire in ~10 minutes, cache for 8 minutes
     this.searchTokenExpiry = Date.now() + 8 * 60 * 1000;
 
+    console.error('[AUTH] Search token obtained successfully');
     return this.searchToken;
   }
 
@@ -179,8 +194,11 @@ export class AuthManager {
    * Make a search API request
    */
   async searchRequest(queryString: string): Promise<any> {
+    console.error('[SEARCH] Getting search token...');
     const searchToken = await this.getSearchToken();
     const url = `${this.getSearchBaseUrl()}/fullsearch?${queryString}`;
+
+    console.error(`[SEARCH] Making search request to: ${url}`);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -191,11 +209,14 @@ export class AuthManager {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[SEARCH] Search request failed with status ${response.status}`);
+      console.error(`[SEARCH] Error response: ${errorText}`);
       throw new Error(
         `Search request failed: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
+    console.error('[SEARCH] Search request successful');
     return response.json();
   }
 
