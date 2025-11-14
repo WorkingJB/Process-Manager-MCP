@@ -1,0 +1,25 @@
+
+Example Search Request URL: https://prd-aus-sch.promapp.io/fullsearch?SearchCriteria=Example%202&IncludedTypes=0&SearchMatchType=0&pageNumber=1
+
+IncludedTypes Definitions:
+All: 0
+Processes Only: 1
+Documents Only: 2
+Policies Only: 3
+Procedure Only Processes: 4
+Suggested Processes: 5
+Groups: 6
+
+Example of Processes Only: https://prd-aus-sch.promapp.io/fullsearch?SearchCriteria=Example%202&IncludedTypes=1&SearchMatchType=0&pageNumber=1
+Example of Documents Only: https://prd-aus-sch.promapp.io/fullsearch?SearchCriteria=Example%202&IncludedTypes=2&SearchMatchType=0&pageNumber=1
+
+When in Process Only, ProcessSearchFields types:
+Title: 1
+Activity: 2
+Task: 3
+Notes: 4
+Objectives: 5
+Background: 6
+Search Keywords: 7
+
+Example of Activity and Task Search: https://prd-aus-sch.promapp.io/fullsearch?SearchCriteria=Example%202&IncludedTypes=1&SearchMatchType=0&ProcessSearchFields=2&ProcessSearchFields=3&pageNumber=1
