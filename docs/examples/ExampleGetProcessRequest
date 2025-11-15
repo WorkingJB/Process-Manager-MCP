@@ -1,3 +1,0 @@
-curl --location 'https://{{region}}.promapp.com/{{sitename}}/Api/v1/Processes/{{processID}}' \
---header 'Authorization: Bearer ********
---header 'Cookie: .pmplng=en; ASP.NET_SessionId=dpmjf2naq2muymqmpytv0l0l; TimeZoneId=AUS+Eastern+Standard+Time; UnsupportedBrowserCheck=true'
