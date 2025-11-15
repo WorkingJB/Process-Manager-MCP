@@ -495,9 +495,35 @@ function formatProcessDetails(result: ProcessResponse): string {
     process.ProcessProcedures.Activity.forEach((activity) => {
       output += `### ${activity.Number} ${activity.Text}\n`;
 
+      // Show role ownership
+      if (activity.Ownerships?.Role && activity.Ownerships.Role.length > 0) {
+        const roles = activity.Ownerships.Role.map((role: any) => role.Name).join(', ');
+        output += `**Assigned to:** ${roles}\n`;
+      }
+
+      // Show tags if present
+      if (activity.Ownerships?.Tag && activity.Ownerships.Tag.length > 0) {
+        const tags = activity.Ownerships.Tag.map((tag: any) => tag.Name).join(', ');
+        output += `**Tags:** ${tags}\n`;
+      }
+
+      // Show tasks
       if (activity.ChildProcessProcedures?.Task) {
+        output += '\n**Tasks:**\n';
         activity.ChildProcessProcedures.Task.forEach((task) => {
           output += `- ${task.Number} ${task.Text}\n`;
+        });
+      }
+
+      // Show risk controls if present
+      if (activity.RiskControls?.RiskControl && activity.RiskControls.RiskControl.length > 0) {
+        output += '\n**Risk Controls:**\n';
+        activity.RiskControls.RiskControl.forEach((risk: any) => {
+          output += `- ${risk.Title}\n`;
+          if (risk.Portfolios?.Portfolio && risk.Portfolios.Portfolio.length > 0) {
+            const portfolios = risk.Portfolios.Portfolio.map((p: any) => p.Name).join(', ');
+            output += `  Portfolio: ${portfolios}\n`;
+          }
         });
       }
 
