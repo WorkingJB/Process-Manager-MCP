@@ -26,6 +26,10 @@ import {
   SearchResponse,
   ProcessResponse,
   ScimUserResponse,
+  TreeItem,
+  TreeItemsResponse,
+  ProcessListItem,
+  ProcessListResponse,
 } from './config.js';
 
 // Load configuration from environment variables
@@ -180,6 +184,46 @@ const TOOLS: Tool[] = [
       required: ['email'],
     },
   },
+  {
+    name: 'get_group_hierarchy',
+    description:
+      'Get the complete organizational structure of process groups. Recursively builds a tree showing all groups, subgroups, and the processes within them. Useful for understanding how processes are organized and discovering what processes exist in different departments or areas.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        maxDepth: {
+          type: 'number',
+          description: 'Maximum depth to traverse (default: unlimited). Use 1 for top-level only, 2 for top-level + direct children, etc.',
+          default: null,
+        },
+        includeProcesses: {
+          type: 'boolean',
+          description: 'Whether to include process listings in the hierarchy (default: true)',
+          default: true,
+        },
+      },
+    },
+  },
+  {
+    name: 'list_processes',
+    description:
+      'Get a paginated list of all processes in the Process Manager instance. Returns process metadata including name, state, owner, expert, and group association. Useful for discovering available processes, getting process counts, or finding processes by state.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        page: {
+          type: 'number',
+          description: 'Page number to retrieve (default: 1)',
+          default: 1,
+        },
+        pageSize: {
+          type: 'number',
+          description: 'Number of processes per page (default: 20, max: 100)',
+          default: 20,
+        },
+      },
+    },
+  },
 ];
 
 // Create MCP server
@@ -222,6 +266,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'lookup_user':
         return await handleLookupUser(args);
+
+      case 'get_group_hierarchy':
+        return await handleGetGroupHierarchy(args);
+
+      case 'list_processes':
+        return await handleListProcesses(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -423,6 +473,112 @@ async function handleLookupUser(args: any) {
 }
 
 /**
+ * Handle get_group_hierarchy tool
+ */
+async function handleGetGroupHierarchy(args: any) {
+  const maxDepth = args.maxDepth ?? null;
+  const includeProcesses = args.includeProcesses ?? true;
+
+  // Recursively build the hierarchy
+  const hierarchy = await buildGroupTree(null, 0, maxDepth, includeProcesses);
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: formatGroupHierarchy(hierarchy),
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(hierarchy, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(hierarchy, null, 2),
+        },
+      },
+    ],
+  };
+}
+
+/**
+ * Recursively build the group tree
+ */
+async function buildGroupTree(
+  groupUniqueId: string | null,
+  currentDepth: number,
+  maxDepth: number | null,
+  includeProcesses: boolean
+): Promise<TreeItem[]> {
+  // Check depth limit
+  if (maxDepth !== null && currentDepth >= maxDepth) {
+    return [];
+  }
+
+  const response = (await authManager.getGroupTreeItems(
+    groupUniqueId ?? undefined
+  )) as TreeItemsResponse;
+
+  const items = response.treeItems;
+
+  // Process each item
+  const processedItems: TreeItem[] = [];
+
+  for (const item of items) {
+    const processedItem: TreeItem = { ...item };
+
+    // If this is a group with children, recurse
+    if (item.itemType === 'group' && item.hasChild) {
+      processedItem.children = await buildGroupTree(
+        item.uniqueId,
+        currentDepth + 1,
+        maxDepth,
+        includeProcesses
+      );
+    }
+
+    // Filter out processes if not requested
+    if (!includeProcesses &&
+        (item.itemType === 'process' || item.itemType === 'inprogress-process')) {
+      continue;
+    }
+
+    processedItems.push(processedItem);
+  }
+
+  return processedItems;
+}
+
+/**
+ * Handle list_processes tool
+ */
+async function handleListProcesses(args: any) {
+  const page = args.page ?? 1;
+  const pageSize = Math.min(args.pageSize ?? 20, 100); // Cap at 100
+
+  const result = (await authManager.getProcessList(
+    page,
+    pageSize
+  )) as ProcessListResponse;
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: formatProcessList(result, page, pageSize),
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(result, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(result, null, 2),
+        },
+      },
+    ],
+  };
+}
+
+/**
  * Format search results for display
  */
 function formatSearchResults(results: SearchResponse, searchType: string): string {
@@ -556,6 +712,164 @@ function formatUserLookup(result: ScimUserResponse, email: string): string {
     user.emails.forEach((email) => {
       output += `  - ${email.value} ${email.primary ? '(primary)' : ''}\n`;
     });
+  }
+
+  return output;
+}
+
+/**
+ * Format group hierarchy for display
+ */
+function formatGroupHierarchy(hierarchy: TreeItem[]): string {
+  let output = `# Process Group Hierarchy\n\n`;
+
+  if (hierarchy.length === 0) {
+    return output + 'No groups found.\n';
+  }
+
+  // Count totals
+  const counts = countHierarchyItems(hierarchy);
+  output += `**Total Groups:** ${counts.groups}\n`;
+  output += `**Total Processes:** ${counts.processes}\n`;
+  output += `**In-Progress Processes:** ${counts.inProgressProcesses}\n`;
+  output += `**Document Groups:** ${counts.documentGroups}\n\n`;
+  output += '---\n\n';
+
+  // Format the tree
+  output += formatTreeLevel(hierarchy, 0);
+
+  return output;
+}
+
+/**
+ * Count items in hierarchy
+ */
+function countHierarchyItems(items: TreeItem[]): {
+  groups: number;
+  processes: number;
+  inProgressProcesses: number;
+  documentGroups: number;
+} {
+  let counts = {
+    groups: 0,
+    processes: 0,
+    inProgressProcesses: 0,
+    documentGroups: 0,
+  };
+
+  for (const item of items) {
+    if (item.itemType === 'group') {
+      counts.groups++;
+      if (item.children) {
+        const childCounts = countHierarchyItems(item.children);
+        counts.groups += childCounts.groups;
+        counts.processes += childCounts.processes;
+        counts.inProgressProcesses += childCounts.inProgressProcesses;
+        counts.documentGroups += childCounts.documentGroups;
+      }
+    } else if (item.itemType === 'process') {
+      counts.processes++;
+    } else if (item.itemType === 'inprogress-process') {
+      counts.inProgressProcesses++;
+    } else if (item.itemType === 'documentgroup') {
+      counts.documentGroups++;
+    }
+  }
+
+  return counts;
+}
+
+/**
+ * Format a level of the tree
+ */
+function formatTreeLevel(items: TreeItem[], depth: number): string {
+  let output = '';
+  const indent = '  '.repeat(depth);
+
+  for (const item of items) {
+    // Choose icon based on type
+    let icon = '';
+    if (item.itemType === 'group') {
+      icon = '📁';
+    } else if (item.itemType === 'process') {
+      icon = '📄';
+    } else if (item.itemType === 'inprogress-process') {
+      icon = '🔄';
+    } else if (item.itemType === 'documentgroup') {
+      icon = '📚';
+    }
+
+    output += `${indent}${icon} **${item.title}**`;
+
+    // Add metadata
+    if (item.itemType === 'group' && item.totalSubgroups !== null && item.totalSubgroups > 0) {
+      output += ` (${item.totalSubgroups} subgroup${item.totalSubgroups > 1 ? 's' : ''})`;
+    }
+
+    output += `\n${indent}   ID: ${item.uniqueId}\n`;
+
+    // Recurse into children
+    if (item.children && item.children.length > 0) {
+      output += formatTreeLevel(item.children, depth + 1);
+    }
+
+    output += '\n';
+  }
+
+  return output;
+}
+
+/**
+ * Format process list for display
+ */
+function formatProcessList(
+  result: ProcessListResponse,
+  page: number,
+  pageSize: number
+): string {
+  let output = `# Process List\n\n`;
+
+  if (result.items.length === 0) {
+    return output + 'No processes found.\n';
+  }
+
+  // Show pagination info
+  const totalPages = Math.ceil(result.totalItemCount / pageSize);
+  const startIndex = (page - 1) * pageSize + 1;
+  const endIndex = Math.min(page * pageSize, result.totalItemCount);
+
+  output += `**Total Processes:** ${result.totalItemCount}\n`;
+  output += `**Showing:** ${startIndex}-${endIndex} (Page ${page} of ${totalPages})\n\n`;
+  output += '---\n\n';
+
+  // List processes
+  result.items.forEach((process: ProcessListItem, index: number) => {
+    const displayNumber = startIndex + index;
+
+    output += `## ${displayNumber}. ${process.processName}\n\n`;
+    output += `**Process ID:** ${process.processUniqueId}\n`;
+    output += `**State:** ${process.processState}`;
+
+    if (process.processRevisionState) {
+      output += ` (${process.processRevisionState})`;
+    }
+    output += `\n`;
+
+    output += `**Group:** ${process.groupName}\n`;
+    output += `**Owner:** ${process.processOwner}\n`;
+    output += `**Expert:** ${process.processExpert}\n`;
+
+    if (process.isFavourite) {
+      output += `⭐ **Favorite**\n`;
+    }
+
+    output += `\n`;
+  });
+
+  // Show pagination hint
+  if (page < totalPages) {
+    output += `\n---\n\n`;
+    output += `More processes available. Use page ${page + 1} to view the next page.\n`;
   }
 
   return output;

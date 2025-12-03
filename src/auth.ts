@@ -251,4 +251,26 @@ export class AuthManager {
 
     return response.json();
   }
+
+  /**
+   * Get child process group tree items
+   * If groupUniqueId is null/undefined, gets top-level groups
+   */
+  async getGroupTreeItems(groupUniqueId?: string): Promise<any> {
+    const endpoint = groupUniqueId
+      ? `/Process/View/GetChildProcessGroupTreeItems?uniqueId=${groupUniqueId}`
+      : `/Process/View/GetChildProcessGroupTreeItems`;
+
+    console.error(`[HIERARCHY] Getting tree items for group: ${groupUniqueId || 'root'}`);
+    return this.apiRequest(endpoint);
+  }
+
+  /**
+   * Get paginated list of all processes
+   */
+  async getProcessList(page: number = 1, pageSize: number = 20): Promise<any> {
+    const endpoint = `/Bff/Process/api/v1/processes?Page=${page}&PageSize=${pageSize}`;
+    console.error(`[PROCESS_LIST] Getting processes page ${page}, size ${pageSize}`);
+    return this.apiRequest(endpoint);
+  }
 }

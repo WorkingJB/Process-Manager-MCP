@@ -164,6 +164,36 @@ Look up user "john.doe@example.com"
 
 **Note:** Requires `PM_SCIM_API_KEY` to be configured.
 
+### 6. `get_group_hierarchy`
+
+Get the complete organizational structure of process groups. Recursively builds a tree showing all groups, subgroups, and the processes within them.
+
+**Parameters:**
+- `maxDepth` (optional): Maximum depth to traverse (default: unlimited). Use 1 for top-level only, 2 for top-level + direct children, etc.
+- `includeProcesses` (optional): Whether to include process listings in the hierarchy (default: true)
+
+**Example:**
+```
+Show me the organizational structure of all process groups
+```
+
+**Returns:** Both formatted text and structured JSON data for AI agent consumption.
+
+### 7. `list_processes`
+
+Get a paginated list of all processes in the Process Manager instance. Returns process metadata including name, state, owner, expert, and group association.
+
+**Parameters:**
+- `page` (optional): Page number to retrieve (default: 1)
+- `pageSize` (optional): Number of processes per page (default: 20, max: 100)
+
+**Example:**
+```
+List all processes
+```
+
+**Returns:** Both formatted text and structured JSON data for AI agent consumption.
+
 ## Usage Examples
 
 Once configured in your MCP client (e.g., Claude Desktop), you can ask questions like:
@@ -174,6 +204,9 @@ Once configured in your MCP client (e.g., Claude Desktop), you can ask questions
 - "Show me the details of process 00b2107e-e3f5-4921-990a-508b1347cba6"
 - "Look up the user jane.smith@example.com"
 - "What processes have been recently updated that I'm involved in?" (uses search with filters)
+- "Show me the organizational structure of all process groups"
+- "List all processes in the system"
+- "What processes exist in the Finance department?"
 
 ## Regional Endpoints
 

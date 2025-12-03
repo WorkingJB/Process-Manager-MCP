@@ -217,4 +217,55 @@ export interface ScimUser {
   };
 }
 
+/**
+ * Group hierarchy tree item
+ */
+export interface TreeItem {
+  id: number;
+  uniqueId: string;
+  title: string;
+  itemType: string; // 'group', 'process', 'inprogress-process', 'documentgroup', etc.
+  itemOrder: number;
+  hasChild: boolean | null;
+  totalSubgroups: number | null;
+  totalStakeholderUsers: number | null;
+  totalPermissionRoles: number | null;
+  totalPermissionUsers: number | null;
+  variationSetId: string | null;
+  children?: TreeItem[]; // Populated by recursive traversal
+}
+
+export interface TreeItemsResponse {
+  treeItems: TreeItem[];
+  parentUniqueId: string;
+}
+
+/**
+ * Process list item
+ */
+export interface ProcessListItem {
+  canRestore: boolean;
+  canDelete: boolean;
+  processId: number;
+  processName: string;
+  processUniqueId: string;
+  processState: string;
+  processRevisionState: string | null;
+  groupId: number;
+  groupUniqueId: string;
+  groupName: string;
+  groupExists: boolean | null;
+  processOwner: string;
+  processExpert: string;
+  isFavourite: boolean;
+  ratingValue: number | null;
+  acknowledgementRequired: boolean;
+}
+
+export interface ProcessListResponse {
+  items: ProcessListItem[];
+  totalItemCount: number;
+  displayAcknowledgement: boolean;
+}
+
 export const SCIM_API_BASE_URL = 'https://api.promapp.com/api/scim';
