@@ -56,7 +56,15 @@ const TOOLS: Tool[] = [
   {
     name: 'search_processes',
     description:
-      'Search for processes in Process Manager. Searches across process titles, activities, tasks, objectives, and more. Returns a list of matching processes with their metadata, URLs, and highlighted matching content.',
+      `Search for processes in Process Manager. Searches across process titles, activities, tasks, objectives, and more. Returns a list of matching processes with their metadata, URLs, and highlighted matching content.
+
+Examples:
+- "onboarding" - finds employee onboarding processes
+- "risk management" - finds processes related to risk management
+- "customer service" - finds customer-facing processes
+- "compliance audit" - finds audit and compliance processes
+
+Returns both formatted text and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -102,7 +110,15 @@ const TOOLS: Tool[] = [
   {
     name: 'search_documents',
     description:
-      'Search for documents in Process Manager. Returns a list of matching documents with their metadata and process associations.',
+      `Search for documents in Process Manager. Returns a list of matching documents with their metadata and process associations.
+
+Examples:
+- "policy" - finds policy documents
+- "template" - finds document templates
+- "form" - finds forms and worksheets
+- "checklist" - finds checklist documents
+
+Returns both formatted text and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -129,7 +145,15 @@ const TOOLS: Tool[] = [
   {
     name: 'search_all',
     description:
-      'Search for all types of content in Process Manager (processes, documents, policies, groups). Returns a comprehensive list of matches across all entity types.',
+      `Search for all types of content in Process Manager (processes, documents, policies, groups). Returns a comprehensive list of matches across all entity types.
+
+Examples:
+- "compliance" - finds processes, documents, and policies related to compliance
+- "HR" - finds all HR-related content across the organization
+- "security" - finds security-related processes, policies, and documents
+- "finance department" - finds content in the finance area
+
+Returns both formatted text and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -156,7 +180,15 @@ const TOOLS: Tool[] = [
   {
     name: 'get_process',
     description:
-      'Get detailed information about a specific process by its unique ID. Returns the complete process structure including activities, tasks, objectives, owner, expert, and all process metadata.',
+      `Get detailed information about a specific process by its unique ID. Returns the complete process structure including activities, tasks, objectives, owner, expert, and all process metadata.
+
+Examples:
+- Get process "00b2107e-e3f5-4921-990a-508b1347cba6" - retrieves full details
+- Use after searching to get complete information about a found process
+- Retrieve process structure to understand activities and task flow
+- Check who owns or is expert for a specific process
+
+Returns both formatted markdown and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -172,7 +204,15 @@ const TOOLS: Tool[] = [
   {
     name: 'lookup_user',
     description:
-      'Look up a user by their email address using the SCIM API. Returns user information including name, ID, active status, and metadata. Requires SCIM API key to be configured.',
+      `Look up a user by their email address using the SCIM API. Returns user information including name, ID, active status, and metadata. Requires SCIM API key to be configured.
+
+Examples:
+- "john.doe@example.com" - finds user John Doe
+- "jane.smith@company.com" - retrieves Jane Smith's information
+- Look up process owners or experts by email
+- Verify user account status and details
+
+Returns both formatted text and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -187,7 +227,16 @@ const TOOLS: Tool[] = [
   {
     name: 'get_group_hierarchy',
     description:
-      'Get the complete organizational structure of process groups. Recursively builds a tree showing all groups, subgroups, and the processes within them. Useful for understanding how processes are organized and discovering what processes exist in different departments or areas.',
+      `Get the complete organizational structure of process groups. Recursively builds a tree showing all groups, subgroups, and the processes within them. Useful for understanding how processes are organized and discovering what processes exist in different departments or areas.
+
+Examples:
+- Get full hierarchy to understand organization structure
+- Use maxDepth=1 to see only top-level groups
+- Use maxDepth=2 to see top-level and their immediate children
+- Set includeProcesses=false to see only group structure without processes
+- Discover what departments or areas exist in the organization
+
+Returns both formatted tree view and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -207,7 +256,16 @@ const TOOLS: Tool[] = [
   {
     name: 'list_processes',
     description:
-      'Get a paginated list of all processes in the Process Manager instance. Returns process metadata including name, state, owner, expert, and group association. Useful for discovering available processes, getting process counts, or finding processes by state.',
+      `Get a paginated list of all processes in the Process Manager instance. Returns process metadata including name, state, owner, expert, and group association. Useful for discovering available processes, getting process counts, or finding processes by state.
+
+Examples:
+- List all processes (default 20 per page)
+- Use pageSize=100 to get maximum processes per page
+- Use page=2 to get the next page of results
+- Get overview of all processes in the organization
+- Find out total process count
+
+Returns both formatted list and structured JSON for programmatic access.`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -351,6 +409,14 @@ async function handleSearchProcesses(args: any) {
         type: 'text',
         text: formatSearchResults(results, 'processes'),
       },
+      {
+        type: 'resource',
+        resource: {
+          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(results, null, 2),
+        },
+      },
     ],
   };
 }
@@ -388,6 +454,14 @@ async function handleSearchDocuments(args: any) {
       {
         type: 'text',
         text: formatSearchResults(results, 'documents'),
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(results, null, 2),
+        },
       },
     ],
   };
@@ -427,6 +501,14 @@ async function handleSearchAll(args: any) {
         type: 'text',
         text: formatSearchResults(results, 'all content'),
       },
+      {
+        type: 'resource',
+        resource: {
+          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(results, null, 2),
+        },
+      },
     ],
   };
 }
@@ -446,6 +528,14 @@ async function handleGetProcess(args: any) {
       {
         type: 'text',
         text: formatProcessDetails(result),
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: `promapp://process/${processId}`,
+          mimeType: 'application/json',
+          text: JSON.stringify(result, null, 2),
+        },
       },
     ],
   };
@@ -467,6 +557,14 @@ async function handleLookupUser(args: any) {
       {
         type: 'text',
         text: formatUserLookup(result, email),
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: `data:application/json,` + encodeURIComponent(JSON.stringify(result, null, 2)),
+          mimeType: 'application/json',
+          text: JSON.stringify(result, null, 2),
+        },
       },
     ],
   };

@@ -1,0 +1,42 @@
+# Source files (we only want to publish the built dist/ folder)
+src/
+tsconfig.json
+
+# Tests and test files
+test/
+test-server.sh
+*.test.js
+*.test.ts
+
+# Documentation that's not needed in the package
+docs/
+IMPROVEMENT_ROADMAP.md
+
+# Development files
+.env
+.env.example
+.vscode/
+.idea/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~

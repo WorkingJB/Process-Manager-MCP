@@ -14,12 +14,27 @@
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "process-manager",
     "nintex",
-    "promapp"
+    "promapp",
+    "ai",
+    "llm",
+    "claude",
+    "copilot",
+    "automation",
+    "business-process"
   ],
-  "author": "",
+  "author": "Jonathan Butler",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WorkingJB/Process-Manager-MCP.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WorkingJB/Process-Manager-MCP/issues"
+  },
+  "homepage": "https://github.com/WorkingJB/Process-Manager-MCP#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "node-fetch": "^3.3.2"
