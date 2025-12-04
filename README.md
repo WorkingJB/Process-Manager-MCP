@@ -10,12 +10,13 @@ Alpha verion of the Model Context Protocol (MCP) server for Nintex Process Manag
 - **Search Documents**: Find documents within your Process Manager instance
 - **Search All Content**: Comprehensive search across all entity types (processes, documents, policies, groups)
 - **Get Process Details**: Retrieve complete process information including activities, tasks, and metadata
-- **User Lookup**: Find user information via SCIM API
 
 ### Phase 2 (Planned)
 
-- Create new processes
+- User Lookup: Find user information via SCIM API
+- Render Minimode inline
 - Update process content
+- Create new processes
 - Submit processes for approval
 - Review processes
 - Publish processes
