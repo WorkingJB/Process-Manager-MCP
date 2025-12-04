@@ -1,6 +1,6 @@
 # Process Manager MCP Server
 
-An unofficial Model Context Protocol (MCP) server for Nintex Process Manager. This server enables AI applications and chatbots to interact with your Process Manager data through a standardized interface.
+Alpha verion of the Model Context Protocol (MCP) server for Nintex Process Manager. This server enables AI applications and chatbots to interact with your Process Manager data through a standardized interface.
 
 ## Features
 
