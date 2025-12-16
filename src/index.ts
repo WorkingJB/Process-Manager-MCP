@@ -32,6 +32,7 @@ import {
   ProcessListResponse,
   MinimodeGenerateRequest,
   MinimodeGenerateResponse,
+  REGIONAL_ENDPOINTS,
 } from './config.js';
 
 // Load configuration from environment variables
@@ -745,7 +746,11 @@ async function handleGetProcessDiagram(args: any) {
   const permalinkUrl = minimodeResponse.permalinkUrl;
   console.error(`[DIAGRAM] Generated permalink: ${permalinkUrl}`);
 
-  // Step 3: Create the iframe HTML
+  // Step 3: Construct the regular process page URL
+  const siteUrl = REGIONAL_ENDPOINTS[config.region].siteUrl;
+  const processPageUrl = `${siteUrl}/${config.siteName}/Process/View/${processId}`;
+
+  // Step 4: Create the iframe HTML (using Minimode URL)
   const iframeHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -801,7 +806,7 @@ async function handleGetProcessDiagram(args: any) {
     content: [
       {
         type: 'text',
-        text: `# Process Diagram: ${processName}\n\n**Process ID:** ${processId}\n**Interactive Diagram URL:** ${permalinkUrl}\n\nAn interactive process diagram has been generated. The diagram is displayed in an iframe below and shows the complete process flow with activities, decision points, and connections.`,
+        text: `# Process Diagram: ${processName}\n\n**Process ID:** ${processId}\n**View Process:** ${processPageUrl}\n\nAn interactive process diagram is available. If your client supports embedded content, the diagram will be displayed below showing the complete process flow with activities, decision points, and connections.`,
       },
       {
         type: 'resource',
