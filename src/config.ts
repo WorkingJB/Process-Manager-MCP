@@ -150,6 +150,7 @@ export interface ProcessResponse {
     Owner: string;
     Group: string;
     State: string;
+    ProcessRevisionEditId: number;
     ProcessProcedures: {
       Activity: Activity[];
     };
@@ -266,6 +267,19 @@ export interface ProcessListResponse {
   items: ProcessListItem[];
   totalItemCount: number;
   displayAcknowledgement: boolean;
+}
+
+/**
+ * Minimode generate response
+ */
+export interface MinimodeGenerateRequest {
+  processUniqueId: string;
+  processRevisionEditId: number;
+  variationId: string;
+}
+
+export interface MinimodeGenerateResponse {
+  permalinkUrl: string;
 }
 
 export const SCIM_API_BASE_URL = 'https://api.promapp.com/api/scim';

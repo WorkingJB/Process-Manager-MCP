@@ -10,11 +10,13 @@ Alpha verion of the Model Context Protocol (MCP) server for Nintex Process Manag
 - **Search Documents**: Find documents within your Process Manager instance
 - **Search All Content**: Comprehensive search across all entity types (processes, documents, policies, groups)
 - **Get Process Details**: Retrieve complete process information including activities, tasks, and metadata
+- **User Lookup**: Find user information via SCIM API
+- **Process Diagrams**: Display interactive process maps using embedded iframes (Minimode)
+- **Group Hierarchy**: Retrieve organizational structure of process groups
+- **List Processes**: Get paginated lists of all processes
 
 ### Phase 2 (Planned)
 
-- User Lookup: Find user information via SCIM API
-- Render Minimode inline
 - Update process content
 - Create new processes
 - Submit processes for approval
@@ -377,6 +379,22 @@ List all processes
 
 **Returns:** Both formatted text and structured JSON data for AI agent consumption.
 
+### 8. `get_process_diagram`
+
+Get an interactive process diagram (process map) for a specific process. Returns an embedded iframe displaying the visual process map from Minimode. The diagram shows the complete process flow with activities, decision points, and connections in an interactive format.
+
+**Parameters:**
+- `processId` (required): The unique ID of the process (UUID format)
+
+**Example:**
+```
+Get the process diagram for process "d93f4301-83a3-4970-996e-223c2e08b168"
+```
+
+**Returns:** An embedded iframe with the interactive process diagram and structured JSON data. The diagram is rendered using Claude Desktop's iframe support for MCP tools, providing a visual representation of the process flow.
+
+**Note:** This tool generates a Minimode permalink URL and embeds it in an iframe that can be displayed in MCP clients that support HTML content (like Claude Desktop).
+
 ## Usage Examples
 
 Once configured in your MCP client (e.g., Claude Desktop), you can ask questions like:
@@ -385,6 +403,8 @@ Once configured in your MCP client (e.g., Claude Desktop), you can ask questions
 - "Search for processes related to customer support"
 - "Find documents about security policies"
 - "Show me the details of process 00b2107e-e3f5-4921-990a-508b1347cba6"
+- "Show me the process diagram for the onboarding process"
+- "Can you display the process map for process d93f4301-83a3-4970-996e-223c2e08b168?"
 - "Look up the user jane.smith@example.com"
 - "What processes have been recently updated that I'm involved in?" (uses search with filters)
 - "Show me the organizational structure of all process groups"

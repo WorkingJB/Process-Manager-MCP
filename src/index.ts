@@ -30,6 +30,8 @@ import {
   TreeItemsResponse,
   ProcessListItem,
   ProcessListResponse,
+  MinimodeGenerateRequest,
+  MinimodeGenerateResponse,
 } from './config.js';
 
 // Load configuration from environment variables
@@ -282,6 +284,30 @@ Returns both formatted list and structured JSON for programmatic access.`,
       },
     },
   },
+  {
+    name: 'get_process_diagram',
+    description:
+      `Get an interactive process diagram (process map) for a specific process. Returns an embedded iframe displaying the visual process map from Minimode. The diagram shows the complete process flow with activities, decision points, and connections in an interactive format.
+
+Examples:
+- Get diagram for process "d93f4301-83a3-4970-996e-223c2e08b168" - displays interactive map
+- Use after getting process details to visualize the process flow
+- View the process map to understand the complete workflow visually
+- Share interactive process diagrams with stakeholders
+
+Returns an embedded iframe with the process diagram and structured JSON for programmatic access.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description:
+            'The unique ID of the process (UUID format, e.g., "d93f4301-83a3-4970-996e-223c2e08b168")',
+        },
+      },
+      required: ['processId'],
+    },
+  },
 ];
 
 // Create MCP server
@@ -330,6 +356,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'list_processes':
         return await handleListProcesses(args);
+
+      case 'get_process_diagram':
+        return await handleGetProcessDiagram(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -670,6 +699,116 @@ async function handleListProcesses(args: any) {
           uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(result, null, 2)),
           mimeType: 'application/json',
           text: JSON.stringify(result, null, 2),
+        },
+      },
+    ],
+  };
+}
+
+/**
+ * Handle get_process_diagram tool
+ */
+async function handleGetProcessDiagram(args: any) {
+  const processId = args.processId as string;
+
+  // Step 1: Get the process details to extract ProcessRevisionEditId
+  console.error(`[DIAGRAM] Fetching process details for: ${processId}`);
+  const processDetails = (await authManager.apiRequest(
+    `/Api/v1/Processes/${processId}`
+  )) as ProcessResponse;
+
+  const processRevisionEditId = processDetails.processJson.ProcessRevisionEditId;
+  const processName = processDetails.processJson.Name;
+
+  if (!processRevisionEditId) {
+    throw new Error(`Process ${processId} does not have a ProcessRevisionEditId`);
+  }
+
+  console.error(`[DIAGRAM] Found ProcessRevisionEditId: ${processRevisionEditId}`);
+
+  // Step 2: Generate the Minimode permalink
+  console.error(`[DIAGRAM] Generating Minimode permalink...`);
+  const minimodeRequest: MinimodeGenerateRequest = {
+    processUniqueId: processId,
+    processRevisionEditId: processRevisionEditId,
+    variationId: '',
+  };
+
+  const minimodeResponse = (await authManager.apiRequest(
+    '/Api/v1/Minimode/Process/Generate',
+    {
+      method: 'POST',
+      body: minimodeRequest,
+    }
+  )) as MinimodeGenerateResponse;
+
+  const permalinkUrl = minimodeResponse.permalinkUrl;
+  console.error(`[DIAGRAM] Generated permalink: ${permalinkUrl}`);
+
+  // Step 3: Create the iframe HTML
+  const iframeHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f5f5f5;
+    }
+    h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 18px;
+    }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+    }
+    .metadata {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Process Diagram: ${processName}</h2>
+    <div class="metadata">Process ID: ${processId}</div>
+    <iframe
+      src="${permalinkUrl}"
+      title="Process Diagram for ${processName}"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+      frameborder="0">
+    </iframe>
+  </div>
+</body>
+</html>`;
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: `# Process Diagram: ${processName}\n\n**Process ID:** ${processId}\n**Interactive Diagram URL:** ${permalinkUrl}\n\nAn interactive process diagram has been generated. The diagram is displayed in an iframe below and shows the complete process flow with activities, decision points, and connections.`,
+      },
+      {
+        type: 'resource',
+        resource: {
+          uri: `ui://process-diagram/${processId}`,
+          mimeType: 'text/html',
+          text: iframeHtml,
         },
       },
     ],
