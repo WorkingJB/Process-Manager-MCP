@@ -916,6 +916,30 @@ function formatReviewDateInfo(summary: ProcessSummaryResponse | null): string {
 }
 
 /**
+ * Determine process state based on version number
+ * - Version < 1.0: Draft (never been published)
+ * - Version X.0: Published
+ * - Version X.Y (where Y > 0): In Progress
+ */
+function getProcessState(version: string): string {
+  if (!version) {
+    return 'Unknown';
+  }
+
+  const versionParts = version.split('.');
+  const majorVersion = parseFloat(versionParts[0]);
+  const minorVersion = versionParts.length > 1 ? parseFloat(versionParts[1]) : 0;
+
+  if (majorVersion < 1) {
+    return 'Draft';
+  } else if (minorVersion === 0) {
+    return 'Published';
+  } else {
+    return 'In Progress';
+  }
+}
+
+/**
  * Format process details for display
  */
 function formatProcessDetails(result: ProcessResponse, summary: ProcessSummaryResponse | null = null): string {
@@ -924,6 +948,13 @@ function formatProcessDetails(result: ProcessResponse, summary: ProcessSummaryRe
   let output = `# ${process.Name}\n\n`;
   output += `**Process ID:** ${process.UniqueId}\n`;
   output += `**State:** ${process.State}\n`;
+
+  // Add version and process state information
+  if (process.Version) {
+    const processState = getProcessState(process.Version);
+    output += `**Version:** ${process.Version} (${processState})\n`;
+  }
+
   output += `**Owner:** ${process.Owner}\n`;
   output += `**Expert:** ${process.Expert}\n`;
   output += `**Group:** ${process.Group}\n`;
