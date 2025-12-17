@@ -25,6 +25,7 @@ import {
   SearchMatchType,
   SearchResponse,
   ProcessResponse,
+  ProcessSummaryResponse,
   ScimUserResponse,
   TreeItem,
   TreeItemsResponse,
@@ -553,11 +554,22 @@ async function handleGetProcess(args: any) {
     `/Api/v1/Processes/${processId}`
   )) as ProcessResponse;
 
+  // Fetch process summary to get review date information
+  let summary: ProcessSummaryResponse | null = null;
+  try {
+    summary = (await authManager.apiRequest(
+      `/bff/process/api/v1/processes/${processId}/summary?latestRevisionEdit=true`
+    )) as ProcessSummaryResponse;
+  } catch (error) {
+    // If summary endpoint fails, continue without review date info
+    console.error('[API] Failed to fetch process summary:', error);
+  }
+
   return {
     content: [
       {
         type: 'text',
-        text: formatProcessDetails(result),
+        text: formatProcessDetails(result, summary),
       },
       {
         type: 'resource',
@@ -866,9 +878,47 @@ function formatSearchResults(results: SearchResponse, searchType: string): strin
 }
 
 /**
+ * Check if a process is out of date based on its review date
+ */
+function isProcessOutOfDate(nextReviewDate: string | null): boolean {
+  if (!nextReviewDate) {
+    return false;
+  }
+
+  const reviewDate = new Date(nextReviewDate);
+  const currentDate = new Date();
+
+  return currentDate > reviewDate;
+}
+
+/**
+ * Format review date information for display
+ */
+function formatReviewDateInfo(summary: ProcessSummaryResponse | null): string {
+  if (!summary || !summary.nextReviewDate) {
+    return '';
+  }
+
+  const reviewDate = new Date(summary.nextReviewDate);
+  const isOutOfDate = isProcessOutOfDate(summary.nextReviewDate);
+
+  let output = `**Next Review Date:** ${reviewDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })}`;
+
+  if (isOutOfDate) {
+    output += ' ⚠️ **OUT OF DATE**';
+  }
+
+  return output + '\n';
+}
+
+/**
  * Format process details for display
  */
-function formatProcessDetails(result: ProcessResponse): string {
+function formatProcessDetails(result: ProcessResponse, summary: ProcessSummaryResponse | null = null): string {
   const process = result.processJson;
 
   let output = `# ${process.Name}\n\n`;
@@ -876,7 +926,15 @@ function formatProcessDetails(result: ProcessResponse): string {
   output += `**State:** ${process.State}\n`;
   output += `**Owner:** ${process.Owner}\n`;
   output += `**Expert:** ${process.Expert}\n`;
-  output += `**Group:** ${process.Group}\n\n`;
+  output += `**Group:** ${process.Group}\n`;
+
+  // Add review date information if available
+  const reviewDateInfo = formatReviewDateInfo(summary);
+  if (reviewDateInfo) {
+    output += reviewDateInfo;
+  }
+
+  output += '\n';
 
   if (process.Objective) {
     output += `**Objective:**\n${process.Objective}\n\n`;
