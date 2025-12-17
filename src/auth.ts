@@ -40,6 +40,14 @@ export class AuthManager {
   }
 
   /**
+   * Get the site base URL (public method)
+   * Used for generating links to the Process Manager site
+   */
+  getSiteUrl(): string {
+    return this.getSiteBaseUrl();
+  }
+
+  /**
    * Authenticate with Site Auth (OAuth2 password grant)
    * Returns a JWT bearer token for API access
    */

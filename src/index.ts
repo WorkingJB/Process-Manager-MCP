@@ -565,11 +565,14 @@ async function handleGetProcess(args: any) {
     console.error('[API] Failed to fetch process summary:', error);
   }
 
+  // Get site URL for generating risk control links
+  const siteUrl = authManager.getSiteUrl();
+
   return {
     content: [
       {
         type: 'text',
-        text: formatProcessDetails(result, summary),
+        text: formatProcessDetails(result, summary, siteUrl),
       },
       {
         type: 'resource',
@@ -942,7 +945,11 @@ function getProcessState(version: string): string {
 /**
  * Format process details for display
  */
-function formatProcessDetails(result: ProcessResponse, summary: ProcessSummaryResponse | null = null): string {
+function formatProcessDetails(
+  result: ProcessResponse,
+  summary: ProcessSummaryResponse | null = null,
+  siteUrl: string = ''
+): string {
   const process = result.processJson;
 
   let output = `# ${process.Name}\n\n`;
@@ -1006,10 +1013,24 @@ function formatProcessDetails(result: ProcessResponse, summary: ProcessSummaryRe
       if (activity.RiskControls?.RiskControl && activity.RiskControls.RiskControl.length > 0) {
         output += '\n**Risk Controls:**\n';
         activity.RiskControls.RiskControl.forEach((risk: any) => {
-          output += `- ${risk.Title}\n`;
+          // Show risk reference and title
+          output += `- **${risk.Ref}**: ${risk.Title}\n`;
+
+          // Show portfolio information
           if (risk.Portfolios?.Portfolio && risk.Portfolios.Portfolio.length > 0) {
             const portfolios = risk.Portfolios.Portfolio.map((p: any) => p.Name).join(', ');
-            output += `  Portfolio: ${portfolios}\n`;
+            output += `  - Portfolio: ${portfolios}\n`;
+          }
+
+          // Show objective if present
+          if (risk.Objective) {
+            output += `  - Objective: ${risk.Objective}\n`;
+          }
+
+          // Generate and show link to risk register if we have a site URL and ref
+          if (siteUrl && risk.Ref) {
+            const riskUrl = `${siteUrl}/Risk/Register?TreatmentKey=${risk.Ref}`;
+            output += `  - View in Risk Register: ${riskUrl}\n`;
           }
         });
       }
