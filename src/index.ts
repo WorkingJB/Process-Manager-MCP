@@ -25,6 +25,7 @@ import {
   SearchMatchType,
   SearchResponse,
   ProcessResponse,
+  ProcessSummaryResponse,
   ScimUserResponse,
   TreeItem,
   TreeItemsResponse,
@@ -553,11 +554,25 @@ async function handleGetProcess(args: any) {
     `/Api/v1/Processes/${processId}`
   )) as ProcessResponse;
 
+  // Fetch process summary to get review date information
+  let summary: ProcessSummaryResponse | null = null;
+  try {
+    summary = (await authManager.apiRequest(
+      `/bff/process/api/v1/processes/${processId}/summary?latestRevisionEdit=true`
+    )) as ProcessSummaryResponse;
+  } catch (error) {
+    // If summary endpoint fails, continue without review date info
+    console.error('[API] Failed to fetch process summary:', error);
+  }
+
+  // Get site URL for generating risk control links
+  const siteUrl = authManager.getSiteUrl();
+
   return {
     content: [
       {
         type: 'text',
-        text: formatProcessDetails(result),
+        text: formatProcessDetails(result, summary, siteUrl),
       },
       {
         type: 'resource',
@@ -866,17 +881,98 @@ function formatSearchResults(results: SearchResponse, searchType: string): strin
 }
 
 /**
+ * Check if a process is out of date based on its review date
+ */
+function isProcessOutOfDate(nextReviewDate: string | null): boolean {
+  if (!nextReviewDate) {
+    return false;
+  }
+
+  const reviewDate = new Date(nextReviewDate);
+  const currentDate = new Date();
+
+  return currentDate > reviewDate;
+}
+
+/**
+ * Format review date information for display
+ */
+function formatReviewDateInfo(summary: ProcessSummaryResponse | null): string {
+  if (!summary || !summary.nextReviewDate) {
+    return '';
+  }
+
+  const reviewDate = new Date(summary.nextReviewDate);
+  const isOutOfDate = isProcessOutOfDate(summary.nextReviewDate);
+
+  let output = `**Next Review Date:** ${reviewDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })}`;
+
+  if (isOutOfDate) {
+    output += ' ⚠️ **OUT OF DATE**';
+  }
+
+  return output + '\n';
+}
+
+/**
+ * Determine process state based on version number
+ * - Version < 1.0: Draft (never been published)
+ * - Version X.0: Published
+ * - Version X.Y (where Y > 0): In Progress
+ */
+function getProcessState(version: string): string {
+  if (!version) {
+    return 'Unknown';
+  }
+
+  const versionParts = version.split('.');
+  const majorVersion = parseFloat(versionParts[0]);
+  const minorVersion = versionParts.length > 1 ? parseFloat(versionParts[1]) : 0;
+
+  if (majorVersion < 1) {
+    return 'Draft';
+  } else if (minorVersion === 0) {
+    return 'Published';
+  } else {
+    return 'In Progress';
+  }
+}
+
+/**
  * Format process details for display
  */
-function formatProcessDetails(result: ProcessResponse): string {
+function formatProcessDetails(
+  result: ProcessResponse,
+  summary: ProcessSummaryResponse | null = null,
+  siteUrl: string = ''
+): string {
   const process = result.processJson;
 
   let output = `# ${process.Name}\n\n`;
   output += `**Process ID:** ${process.UniqueId}\n`;
   output += `**State:** ${process.State}\n`;
+
+  // Add version and process state information
+  if (process.Version) {
+    const processState = getProcessState(process.Version);
+    output += `**Version:** ${process.Version} (${processState})\n`;
+  }
+
   output += `**Owner:** ${process.Owner}\n`;
   output += `**Expert:** ${process.Expert}\n`;
-  output += `**Group:** ${process.Group}\n\n`;
+  output += `**Group:** ${process.Group}\n`;
+
+  // Add review date information if available
+  const reviewDateInfo = formatReviewDateInfo(summary);
+  if (reviewDateInfo) {
+    output += reviewDateInfo;
+  }
+
+  output += '\n';
 
   if (process.Objective) {
     output += `**Objective:**\n${process.Objective}\n\n`;
@@ -917,10 +1013,24 @@ function formatProcessDetails(result: ProcessResponse): string {
       if (activity.RiskControls?.RiskControl && activity.RiskControls.RiskControl.length > 0) {
         output += '\n**Risk Controls:**\n';
         activity.RiskControls.RiskControl.forEach((risk: any) => {
-          output += `- ${risk.Title}\n`;
+          // Show risk reference and title
+          output += `- **${risk.Ref}**: ${risk.Title}\n`;
+
+          // Show portfolio information
           if (risk.Portfolios?.Portfolio && risk.Portfolios.Portfolio.length > 0) {
             const portfolios = risk.Portfolios.Portfolio.map((p: any) => p.Name).join(', ');
-            output += `  Portfolio: ${portfolios}\n`;
+            output += `  - Portfolio: ${portfolios}\n`;
+          }
+
+          // Show objective if present
+          if (risk.Objective) {
+            output += `  - Objective: ${risk.Objective}\n`;
+          }
+
+          // Generate and show link to risk register if we have a site URL and ref
+          if (siteUrl && risk.Ref) {
+            const riskUrl = `${siteUrl}/Risk/Register?TreatmentKey=${risk.Ref}`;
+            output += `  - View in Risk Register: ${riskUrl}\n`;
           }
         });
       }

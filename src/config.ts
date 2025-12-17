@@ -158,6 +158,23 @@ export interface ProcessResponse {
   };
 }
 
+/**
+ * Process summary response for review dates
+ */
+export interface ProcessSummaryResponse {
+  owner: string;
+  expert: string;
+  globalProcessExpert: string | null;
+  objective: string;
+  background: string;
+  nextReviewDate: string | null;
+  searchKeywords: string;
+  shouldShowExplicitReview: boolean;
+  isNeverPublishedProcess: boolean;
+  isVariedProcess: boolean;
+  processTags: any;
+}
+
 export interface Activity {
   Id: number;
   UniqueId: string;
