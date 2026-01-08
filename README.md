@@ -27,18 +27,15 @@ Alpha verion of the Model Context Protocol (MCP) server for Nintex Process Manag
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
+- Node.js 18.0.0 or higher (https://nodejs.org/en/download)
 - A Process Manager account with:
   - Username and password
   - Site name
   - Regional endpoint
   - (Optional) SCIM API key for user lookups
 
-### Install from npm (when published)
-
-```bash
-npm install -g process-manager-mcp
-```
+### Install pre-requisites
+- Git (https://git-scm.com/install)
 
 ### Install from source
 
