@@ -36,8 +36,7 @@
   },
   "homepage": "https://github.com/WorkingJB/Process-Manager-MCP#readme",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
-    "node-fetch": "^3.3.2"
+    "@modelcontextprotocol/sdk": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
