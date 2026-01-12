@@ -87,7 +87,33 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 **For Claude Desktop (Windows):**
 
-Edit `%APPDATA%\Claude\claude_desktop_config.json` with the same format as above.
+Edit `%APPDATA%\Claude\claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "process-manager": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\Documents\\Process-Manager-MCP\\dist\\index.js"],
+      "env": {
+        "PM_REGION": "au",
+        "PM_SITE_NAME": "promapp",
+        "PM_USERNAME": "your.email@example.com",
+        "PM_PASSWORD": "your-password",
+        "PM_SCIM_API_KEY": "your-scim-api-key"
+      }
+    }
+  }
+}
+```
+
+**IMPORTANT for Windows users:**
+- Use **double backslashes** (`\\`) in the path (JSON escaping requirement)
+- Use **absolute paths** starting with the drive letter (e.g., `C:\\Users\\...`)
+- Common mistakes:
+  - ❌ `C:Users\\...` (missing backslash after drive letter)
+  - ❌ `C:\Users\...` (single backslashes - invalid JSON)
+  - ✅ `C:\\Users\\...` (correct - absolute path with escaped backslashes)
 
 **For other MCP clients:**
 
@@ -509,6 +535,31 @@ Example API requests and responses are included in the repository:
 - `ExampleGetUserRequest` - SCIM user lookup
 
 ## Troubleshooting
+
+### Windows: "Cannot find module" or path errors
+
+**Symptom:** On Windows, you see errors like:
+```
+Error: Cannot find module 'C:\Users\...\AppData\Local\AnthropicClaude\app-1.0.2768\Users\...\Process-Manager-MCP\dist\index.js'
+```
+
+**Cause:** The path in your configuration is malformed. Node.js is treating it as a relative path instead of an absolute path.
+
+**Common causes:**
+1. Missing backslash after drive letter: `C:Users\...` instead of `C:\Users\...`
+2. Single backslashes in JSON: `C:\Users\...` instead of `C:\\Users\\...`
+3. Using forward slashes: `C:/Users/...` (should work but not recommended)
+
+**Solution:**
+1. Open `%APPDATA%\Claude\claude_desktop_config.json`
+2. Ensure the path in the `args` array is:
+   - An **absolute path** starting with drive letter and backslash (e.g., `C:\\`)
+   - Using **double backslashes** throughout (e.g., `C:\\Users\\YourName\\...`)
+3. Example of correct path:
+   ```json
+   "args": ["C:\\Users\\BarsanB\\Documents\\Development\\MCPTesting\\Process-Manager-MCP\\dist\\index.js"]
+   ```
+4. Restart Claude Desktop after fixing the configuration
 
 ### "Site authentication failed"
 
