@@ -3,7 +3,6 @@
  * Handles Site Auth, Search Auth, and SCIM API authentication
  */
 
-import fetch from 'node-fetch';
 import {
   ProcessManagerConfig,
   REGIONAL_ENDPOINTS,
