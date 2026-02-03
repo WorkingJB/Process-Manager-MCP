@@ -300,3 +300,67 @@ export interface MinimodeGenerateResponse {
 }
 
 export const SCIM_API_BASE_URL = 'https://api.promapp.com/api/scim';
+
+/**
+ * Automation opportunity types
+ */
+export enum AutomationType {
+  API_INTEGRATION = 'api_integration',
+  RPA_BOT = 'rpa_bot',
+  DEDICATED_AGENT = 'dedicated_agent',
+  WORKFLOW_AUTOMATION = 'workflow_automation',
+  DOCUMENT_PROCESSING = 'document_processing',
+  DATA_ENTRY = 'data_entry',
+  NOTIFICATION = 'notification',
+  APPROVAL_WORKFLOW = 'approval_workflow',
+}
+
+/**
+ * Automation confidence level
+ */
+export enum AutomationConfidence {
+  HIGH = 'high',
+  MEDIUM = 'medium',
+  LOW = 'low',
+}
+
+/**
+ * Automation opportunity for a single step
+ */
+export interface StepAutomationOpportunity {
+  stepNumber: string;
+  stepText: string;
+  stepType: 'activity' | 'task';
+  automationTypes: AutomationType[];
+  confidence: AutomationConfidence;
+  rationale: string;
+  indicators: string[];
+  estimatedComplexity: 'low' | 'medium' | 'high';
+}
+
+/**
+ * Process automation analysis result
+ */
+export interface ProcessAutomationAnalysis {
+  processId: string;
+  processName: string;
+  analysisTimestamp: string;
+  summary: {
+    totalSteps: number;
+    automationCandidates: number;
+    highConfidenceOpportunities: number;
+    primaryAutomationTypes: AutomationType[];
+    overallAutomationPotential: 'low' | 'medium' | 'high';
+  };
+  opportunities: StepAutomationOpportunity[];
+  recommendations: string[];
+  agentDesignSuggestions: {
+    suggestedAgents: Array<{
+      name: string;
+      purpose: string;
+      coveredSteps: string[];
+      capabilities: string[];
+    }>;
+    integrationPoints: string[];
+  };
+}

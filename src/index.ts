@@ -34,6 +34,12 @@ import {
   MinimodeGenerateRequest,
   MinimodeGenerateResponse,
   REGIONAL_ENDPOINTS,
+  AutomationType,
+  AutomationConfidence,
+  StepAutomationOpportunity,
+  ProcessAutomationAnalysis,
+  Activity,
+  Task,
 } from './config.js';
 
 // Load configuration from environment variables
@@ -54,6 +60,85 @@ if (!config.siteName || !config.username || !config.password) {
 }
 
 const authManager = new AuthManager(config);
+
+/**
+ * Context window management constants
+ * Following Block's best practice: guard against context overflows
+ */
+const OUTPUT_LIMITS = {
+  // Maximum characters for text output (roughly ~25k tokens)
+  MAX_TEXT_CHARS: 100000,
+  // Maximum items in list responses before truncation
+  MAX_LIST_ITEMS: 50,
+  // Maximum depth for hierarchy traversal
+  MAX_HIERARCHY_DEPTH: 10,
+  // Warning threshold (80% of max)
+  WARNING_THRESHOLD: 0.8,
+};
+
+/**
+ * Truncate text output to stay within context limits
+ * Following Block's best practice for context window management
+ */
+function truncateOutput(text: string, maxChars: number = OUTPUT_LIMITS.MAX_TEXT_CHARS): string {
+  if (text.length <= maxChars) {
+    return text;
+  }
+
+  const truncationMessage = `\n\n---\n**Output truncated.** Showing first ${maxChars.toLocaleString()} characters of ${text.length.toLocaleString()} total. Use pagination or more specific queries to retrieve remaining data.\n`;
+
+  return text.substring(0, maxChars - truncationMessage.length) + truncationMessage;
+}
+
+/**
+ * Estimate token count (rough approximation: ~4 chars per token)
+ */
+function estimateTokenCount(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+/**
+ * Check if output is approaching context limits and add warning
+ */
+function addContextWarningIfNeeded(text: string): string {
+  const estimatedTokens = estimateTokenCount(text);
+  const warningThreshold = OUTPUT_LIMITS.MAX_TEXT_CHARS * OUTPUT_LIMITS.WARNING_THRESHOLD;
+
+  if (text.length > warningThreshold) {
+    const warning = `\n\n> **Note:** This response contains approximately ${estimatedTokens.toLocaleString()} tokens. Consider using more specific queries if you need to preserve context for follow-up questions.\n`;
+    return text + warning;
+  }
+
+  return text;
+}
+
+/**
+ * Prepare text output with context-aware truncation and warnings
+ * Following Block's best practice for context window management
+ */
+function prepareTextOutput(text: string): string {
+  const truncated = truncateOutput(text);
+  return addContextWarningIfNeeded(truncated);
+}
+
+/**
+ * Prepare JSON resource output with size limits
+ */
+function prepareJsonResource(data: any, uri: string): { uri: string; mimeType: string; text: string } {
+  let jsonText = JSON.stringify(data, null, 2);
+
+  // Truncate JSON if too large
+  if (jsonText.length > OUTPUT_LIMITS.MAX_TEXT_CHARS) {
+    console.error(`[OUTPUT] JSON resource truncated: ${jsonText.length} -> ${OUTPUT_LIMITS.MAX_TEXT_CHARS} chars`);
+    jsonText = jsonText.substring(0, OUTPUT_LIMITS.MAX_TEXT_CHARS);
+  }
+
+  return {
+    uri,
+    mimeType: 'application/json',
+    text: jsonText,
+  };
+}
 
 // Define available tools
 const TOOLS: Tool[] = [
@@ -310,6 +395,45 @@ Returns an embedded iframe with the process diagram and structured JSON for prog
       required: ['processId'],
     },
   },
+  {
+    name: 'review_process_for_automation',
+    description:
+      `Analyze a process to identify automation opportunities. Reviews each activity and task to suggest where automation could be applied, including API integrations, RPA bots, dedicated AI agents, or workflow automation.
+
+This tool examines process steps for patterns indicating automation potential:
+- Data entry and transfer tasks
+- System lookups and validations
+- Document processing and generation
+- Approval workflows and notifications
+- Repetitive manual operations
+- Integration points between systems
+
+Returns a structured analysis with:
+- Step-by-step automation opportunities with confidence levels
+- Recommended automation types (API, RPA, Agent, Workflow)
+- Complexity estimates for implementation
+- Suggestions for dedicated agents that could handle parts of the process
+- Integration points and recommendations
+
+Use this tool to assess process improvement opportunities and plan automation initiatives.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description:
+            'The unique ID of the process to analyze (UUID format)',
+        },
+        includeAgentDesign: {
+          type: 'boolean',
+          description:
+            'Whether to include suggestions for dedicated AI agents (default: true)',
+          default: true,
+        },
+      },
+      required: ['processId'],
+    },
+  },
 ];
 
 // Create MCP server
@@ -361,6 +485,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_process_diagram':
         return await handleGetProcessDiagram(args);
+
+      case 'review_process_for_automation':
+        return await handleReviewProcessForAutomation(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -434,19 +561,17 @@ async function handleSearchProcesses(args: any) {
     params.toString()
   )) as SearchResponse;
 
+  const formattedText = prepareTextOutput(formatSearchResults(results, 'processes'));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatSearchResults(results, 'processes'),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(results, null, 2),
-        },
+        resource: prepareJsonResource(results, 'data:application/json,search-processes'),
       },
     ],
   };
@@ -480,19 +605,17 @@ async function handleSearchDocuments(args: any) {
     params.toString()
   )) as SearchResponse;
 
+  const formattedText = prepareTextOutput(formatSearchResults(results, 'documents'));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatSearchResults(results, 'documents'),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(results, null, 2),
-        },
+        resource: prepareJsonResource(results, 'data:application/json,search-documents'),
       },
     ],
   };
@@ -526,19 +649,17 @@ async function handleSearchAll(args: any) {
     params.toString()
   )) as SearchResponse;
 
+  const formattedText = prepareTextOutput(formatSearchResults(results, 'all content'));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatSearchResults(results, 'all content'),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(results, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(results, null, 2),
-        },
+        resource: prepareJsonResource(results, 'data:application/json,search-all'),
       },
     ],
   };
@@ -568,19 +689,17 @@ async function handleGetProcess(args: any) {
   // Get site URL for generating risk control links
   const siteUrl = authManager.getSiteUrl();
 
+  const formattedText = prepareTextOutput(formatProcessDetails(result, summary, siteUrl));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatProcessDetails(result, summary, siteUrl),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: `promapp://process/${processId}`,
-          mimeType: 'application/json',
-          text: JSON.stringify(result, null, 2),
-        },
+        resource: prepareJsonResource(result, `promapp://process/${processId}`),
       },
     ],
   };
@@ -605,11 +724,7 @@ async function handleLookupUser(args: any) {
       },
       {
         type: 'resource',
-        resource: {
-          uri: `data:application/json,` + encodeURIComponent(JSON.stringify(result, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(result, null, 2),
-        },
+        resource: prepareJsonResource(result, `data:application/json,user-lookup`),
       },
     ],
   };
@@ -619,25 +734,27 @@ async function handleLookupUser(args: any) {
  * Handle get_group_hierarchy tool
  */
 async function handleGetGroupHierarchy(args: any) {
-  const maxDepth = args.maxDepth ?? null;
+  // Apply max depth limit to prevent runaway recursion
+  const requestedDepth = args.maxDepth ?? null;
+  const maxDepth = requestedDepth !== null
+    ? Math.min(requestedDepth, OUTPUT_LIMITS.MAX_HIERARCHY_DEPTH)
+    : OUTPUT_LIMITS.MAX_HIERARCHY_DEPTH;
   const includeProcesses = args.includeProcesses ?? true;
 
   // Recursively build the hierarchy
   const hierarchy = await buildGroupTree(null, 0, maxDepth, includeProcesses);
 
+  const formattedText = prepareTextOutput(formatGroupHierarchy(hierarchy));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatGroupHierarchy(hierarchy),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(hierarchy, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(hierarchy, null, 2),
-        },
+        resource: prepareJsonResource(hierarchy, 'data:application/json,group-hierarchy'),
       },
     ],
   };
@@ -696,26 +813,25 @@ async function buildGroupTree(
  */
 async function handleListProcesses(args: any) {
   const page = args.page ?? 1;
-  const pageSize = Math.min(args.pageSize ?? 20, 100); // Cap at 100
+  // Cap page size for context window management
+  const pageSize = Math.min(args.pageSize ?? 20, OUTPUT_LIMITS.MAX_LIST_ITEMS);
 
   const result = (await authManager.getProcessList(
     page,
     pageSize
   )) as ProcessListResponse;
 
+  const formattedText = prepareTextOutput(formatProcessList(result, page, pageSize));
+
   return {
     content: [
       {
         type: 'text',
-        text: formatProcessList(result, page, pageSize),
+        text: formattedText,
       },
       {
         type: 'resource',
-        resource: {
-          uri: 'data:application/json,' + encodeURIComponent(JSON.stringify(result, null, 2)),
-          mimeType: 'application/json',
-          text: JSON.stringify(result, null, 2),
-        },
+        resource: prepareJsonResource(result, 'data:application/json,process-list'),
       },
     ],
   };
@@ -833,6 +949,582 @@ async function handleGetProcessDiagram(args: any) {
       },
     ],
   };
+}
+
+/**
+ * Handle review_process_for_automation tool
+ */
+async function handleReviewProcessForAutomation(args: any) {
+  const processId = args.processId as string;
+  const includeAgentDesign = args.includeAgentDesign ?? true;
+
+  console.error(`[AUTOMATION] Analyzing process for automation: ${processId}`);
+
+  // Fetch process details
+  const result = (await authManager.apiRequest(
+    `/Api/v1/Processes/${processId}`
+  )) as ProcessResponse;
+
+  const process = result.processJson;
+
+  // Analyze the process for automation opportunities
+  const analysis = analyzeProcessForAutomation(
+    process,
+    processId,
+    includeAgentDesign
+  );
+
+  const formattedText = prepareTextOutput(formatAutomationAnalysis(analysis));
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: formattedText,
+      },
+      {
+        type: 'resource',
+        resource: prepareJsonResource(analysis, `promapp://process/${processId}/automation-analysis`),
+      },
+    ],
+  };
+}
+
+/**
+ * Automation indicator patterns - keywords and phrases that suggest automation potential
+ */
+const AUTOMATION_INDICATORS = {
+  dataEntry: [
+    'enter', 'input', 'record', 'log', 'fill', 'complete form', 'update record',
+    'add to', 'capture', 'type', 'key in', 'populate',
+  ],
+  systemLookup: [
+    'check', 'verify', 'look up', 'lookup', 'search', 'find', 'retrieve',
+    'access', 'query', 'get from', 'pull from', 'fetch',
+  ],
+  dataTransfer: [
+    'copy', 'transfer', 'move', 'export', 'import', 'sync', 'migrate',
+    'send to', 'upload', 'download', 'extract',
+  ],
+  documentProcessing: [
+    'document', 'report', 'generate', 'create report', 'prepare', 'compile',
+    'draft', 'format', 'template', 'pdf', 'spreadsheet', 'invoice',
+  ],
+  approval: [
+    'approve', 'review', 'sign off', 'authorize', 'confirm', 'validate',
+    'escalate', 'reject', 'decision', 'manager approval',
+  ],
+  notification: [
+    'notify', 'email', 'send', 'alert', 'inform', 'communicate', 'message',
+    'reminder', 'follow up', 'update stakeholder',
+  ],
+  validation: [
+    'validate', 'check for errors', 'ensure', 'confirm accuracy', 'verify',
+    'reconcile', 'match', 'compare', 'audit', 'quality check',
+  ],
+  scheduling: [
+    'schedule', 'book', 'calendar', 'appointment', 'meeting', 'arrange',
+    'coordinate', 'plan date', 'set time',
+  ],
+  calculation: [
+    'calculate', 'compute', 'sum', 'total', 'determine', 'assess',
+    'evaluate', 'formula', 'percentage', 'rate',
+  ],
+  systemAction: [
+    'system', 'software', 'application', 'database', 'crm', 'erp', 'api',
+    'integration', 'portal', 'platform', 'tool',
+  ],
+};
+
+/**
+ * Analyze a single step (activity or task) for automation opportunities
+ */
+function analyzeStep(
+  stepNumber: string,
+  stepText: string,
+  stepType: 'activity' | 'task'
+): StepAutomationOpportunity | null {
+  const lowerText = stepText.toLowerCase();
+  const foundIndicators: string[] = [];
+  const automationTypes: Set<AutomationType> = new Set();
+
+  // Check for data entry patterns
+  if (AUTOMATION_INDICATORS.dataEntry.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Data entry/input operations detected');
+    automationTypes.add(AutomationType.DATA_ENTRY);
+    automationTypes.add(AutomationType.RPA_BOT);
+  }
+
+  // Check for system lookup patterns
+  if (AUTOMATION_INDICATORS.systemLookup.some(i => lowerText.includes(i))) {
+    foundIndicators.push('System lookup/query operations detected');
+    automationTypes.add(AutomationType.API_INTEGRATION);
+    automationTypes.add(AutomationType.DEDICATED_AGENT);
+  }
+
+  // Check for data transfer patterns
+  if (AUTOMATION_INDICATORS.dataTransfer.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Data transfer between systems detected');
+    automationTypes.add(AutomationType.API_INTEGRATION);
+    automationTypes.add(AutomationType.WORKFLOW_AUTOMATION);
+  }
+
+  // Check for document processing patterns
+  if (AUTOMATION_INDICATORS.documentProcessing.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Document processing/generation detected');
+    automationTypes.add(AutomationType.DOCUMENT_PROCESSING);
+    automationTypes.add(AutomationType.DEDICATED_AGENT);
+  }
+
+  // Check for approval patterns
+  if (AUTOMATION_INDICATORS.approval.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Approval/review workflow detected');
+    automationTypes.add(AutomationType.APPROVAL_WORKFLOW);
+    automationTypes.add(AutomationType.WORKFLOW_AUTOMATION);
+  }
+
+  // Check for notification patterns
+  if (AUTOMATION_INDICATORS.notification.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Notification/communication task detected');
+    automationTypes.add(AutomationType.NOTIFICATION);
+    automationTypes.add(AutomationType.WORKFLOW_AUTOMATION);
+  }
+
+  // Check for validation patterns
+  if (AUTOMATION_INDICATORS.validation.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Validation/verification operations detected');
+    automationTypes.add(AutomationType.RPA_BOT);
+    automationTypes.add(AutomationType.DEDICATED_AGENT);
+  }
+
+  // Check for scheduling patterns
+  if (AUTOMATION_INDICATORS.scheduling.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Scheduling/calendar operations detected');
+    automationTypes.add(AutomationType.API_INTEGRATION);
+    automationTypes.add(AutomationType.WORKFLOW_AUTOMATION);
+  }
+
+  // Check for calculation patterns
+  if (AUTOMATION_INDICATORS.calculation.some(i => lowerText.includes(i))) {
+    foundIndicators.push('Calculation/computation operations detected');
+    automationTypes.add(AutomationType.API_INTEGRATION);
+    automationTypes.add(AutomationType.RPA_BOT);
+  }
+
+  // Check for system action patterns
+  if (AUTOMATION_INDICATORS.systemAction.some(i => lowerText.includes(i))) {
+    foundIndicators.push('System/software interaction detected');
+    automationTypes.add(AutomationType.API_INTEGRATION);
+    automationTypes.add(AutomationType.RPA_BOT);
+  }
+
+  // If no automation opportunities found, return null
+  if (automationTypes.size === 0) {
+    return null;
+  }
+
+  // Determine confidence based on number of indicators
+  let confidence: AutomationConfidence;
+  if (foundIndicators.length >= 3) {
+    confidence = AutomationConfidence.HIGH;
+  } else if (foundIndicators.length >= 2) {
+    confidence = AutomationConfidence.MEDIUM;
+  } else {
+    confidence = AutomationConfidence.LOW;
+  }
+
+  // Estimate complexity based on automation types
+  let estimatedComplexity: 'low' | 'medium' | 'high';
+  if (automationTypes.has(AutomationType.DEDICATED_AGENT) ||
+      automationTypes.size >= 3) {
+    estimatedComplexity = 'high';
+  } else if (automationTypes.has(AutomationType.API_INTEGRATION) ||
+             automationTypes.has(AutomationType.WORKFLOW_AUTOMATION)) {
+    estimatedComplexity = 'medium';
+  } else {
+    estimatedComplexity = 'low';
+  }
+
+  // Generate rationale
+  const rationale = generateStepRationale(Array.from(automationTypes), foundIndicators);
+
+  return {
+    stepNumber,
+    stepText,
+    stepType,
+    automationTypes: Array.from(automationTypes),
+    confidence,
+    rationale,
+    indicators: foundIndicators,
+    estimatedComplexity,
+  };
+}
+
+/**
+ * Generate a human-readable rationale for automation opportunity
+ */
+function generateStepRationale(
+  automationTypes: AutomationType[],
+  indicators: string[]
+): string {
+  const parts: string[] = [];
+
+  if (automationTypes.includes(AutomationType.API_INTEGRATION)) {
+    parts.push('could be automated via API integration with existing systems');
+  }
+  if (automationTypes.includes(AutomationType.RPA_BOT)) {
+    parts.push('suitable for RPA bot handling repetitive UI-based tasks');
+  }
+  if (automationTypes.includes(AutomationType.DEDICATED_AGENT)) {
+    parts.push('could benefit from a dedicated AI agent for intelligent processing');
+  }
+  if (automationTypes.includes(AutomationType.WORKFLOW_AUTOMATION)) {
+    parts.push('can be streamlined with workflow automation tools');
+  }
+  if (automationTypes.includes(AutomationType.DOCUMENT_PROCESSING)) {
+    parts.push('document processing can be automated with templates or AI');
+  }
+  if (automationTypes.includes(AutomationType.DATA_ENTRY)) {
+    parts.push('data entry can be automated to reduce manual effort');
+  }
+  if (automationTypes.includes(AutomationType.NOTIFICATION)) {
+    parts.push('notifications can be automated based on triggers');
+  }
+  if (automationTypes.includes(AutomationType.APPROVAL_WORKFLOW)) {
+    parts.push('approval workflow can be digitized with automated routing');
+  }
+
+  return `This step ${parts.join('; ')}.`;
+}
+
+/**
+ * Analyze process for automation opportunities
+ */
+function analyzeProcessForAutomation(
+  process: ProcessResponse['processJson'],
+  processId: string,
+  includeAgentDesign: boolean
+): ProcessAutomationAnalysis {
+  const opportunities: StepAutomationOpportunity[] = [];
+  let totalSteps = 0;
+
+  // Analyze each activity and its tasks
+  if (process.ProcessProcedures?.Activity) {
+    for (const activity of process.ProcessProcedures.Activity) {
+      totalSteps++;
+
+      // Analyze the activity itself
+      const activityOpportunity = analyzeStep(
+        activity.Number,
+        activity.Text,
+        'activity'
+      );
+      if (activityOpportunity) {
+        opportunities.push(activityOpportunity);
+      }
+
+      // Analyze tasks within the activity
+      if (activity.ChildProcessProcedures?.Task) {
+        for (const task of activity.ChildProcessProcedures.Task) {
+          totalSteps++;
+          const taskOpportunity = analyzeStep(
+            task.Number,
+            task.Text,
+            'task'
+          );
+          if (taskOpportunity) {
+            opportunities.push(taskOpportunity);
+          }
+        }
+      }
+    }
+  }
+
+  // Calculate summary statistics
+  const highConfidenceOpportunities = opportunities.filter(
+    o => o.confidence === AutomationConfidence.HIGH
+  ).length;
+
+  // Collect all automation types found
+  const allAutomationTypes = new Set<AutomationType>();
+  opportunities.forEach(o => o.automationTypes.forEach(t => allAutomationTypes.add(t)));
+
+  // Determine overall automation potential
+  let overallPotential: 'low' | 'medium' | 'high';
+  const automationRatio = opportunities.length / Math.max(totalSteps, 1);
+  if (automationRatio >= 0.5 || highConfidenceOpportunities >= 3) {
+    overallPotential = 'high';
+  } else if (automationRatio >= 0.25 || highConfidenceOpportunities >= 1) {
+    overallPotential = 'medium';
+  } else {
+    overallPotential = 'low';
+  }
+
+  // Generate recommendations
+  const recommendations = generateRecommendations(opportunities, allAutomationTypes);
+
+  // Generate agent design suggestions if requested
+  const agentDesignSuggestions = includeAgentDesign
+    ? generateAgentDesignSuggestions(opportunities, process.Name)
+    : { suggestedAgents: [], integrationPoints: [] };
+
+  return {
+    processId,
+    processName: process.Name,
+    analysisTimestamp: new Date().toISOString(),
+    summary: {
+      totalSteps,
+      automationCandidates: opportunities.length,
+      highConfidenceOpportunities,
+      primaryAutomationTypes: Array.from(allAutomationTypes),
+      overallAutomationPotential: overallPotential,
+    },
+    opportunities,
+    recommendations,
+    agentDesignSuggestions,
+  };
+}
+
+/**
+ * Generate recommendations based on automation opportunities
+ */
+function generateRecommendations(
+  opportunities: StepAutomationOpportunity[],
+  automationTypes: Set<AutomationType>
+): string[] {
+  const recommendations: string[] = [];
+
+  if (opportunities.length === 0) {
+    recommendations.push(
+      'This process appears to require significant human judgment and may not be suitable for automation at this time.'
+    );
+    return recommendations;
+  }
+
+  // High-level recommendations based on automation types found
+  if (automationTypes.has(AutomationType.API_INTEGRATION)) {
+    recommendations.push(
+      'Consider implementing API integrations to connect systems and automate data flow between applications.'
+    );
+  }
+
+  if (automationTypes.has(AutomationType.RPA_BOT)) {
+    recommendations.push(
+      'RPA bots could handle repetitive, rule-based tasks that involve UI interactions across legacy systems.'
+    );
+  }
+
+  if (automationTypes.has(AutomationType.DEDICATED_AGENT)) {
+    recommendations.push(
+      'An AI agent could be developed to handle complex decision-making steps that require contextual understanding.'
+    );
+  }
+
+  if (automationTypes.has(AutomationType.WORKFLOW_AUTOMATION)) {
+    recommendations.push(
+      'Workflow automation tools (e.g., Power Automate, Zapier) could orchestrate the process flow and hand-offs.'
+    );
+  }
+
+  if (automationTypes.has(AutomationType.DOCUMENT_PROCESSING)) {
+    recommendations.push(
+      'Document processing automation (e.g., templates, OCR, AI extraction) could reduce manual document handling.'
+    );
+  }
+
+  if (automationTypes.has(AutomationType.APPROVAL_WORKFLOW)) {
+    recommendations.push(
+      'Digital approval workflows with automated routing and notifications could streamline sign-off processes.'
+    );
+  }
+
+  // Add priority recommendation
+  const highConfidenceSteps = opportunities.filter(o => o.confidence === AutomationConfidence.HIGH);
+  if (highConfidenceSteps.length > 0) {
+    recommendations.push(
+      `Start with high-confidence automation opportunities: ${highConfidenceSteps.map(s => s.stepNumber).join(', ')}.`
+    );
+  }
+
+  return recommendations;
+}
+
+/**
+ * Generate suggestions for dedicated AI agents
+ */
+function generateAgentDesignSuggestions(
+  opportunities: StepAutomationOpportunity[],
+  processName: string
+): ProcessAutomationAnalysis['agentDesignSuggestions'] {
+  const suggestedAgents: Array<{
+    name: string;
+    purpose: string;
+    coveredSteps: string[];
+    capabilities: string[];
+  }> = [];
+
+  const integrationPoints: string[] = [];
+
+  // Group opportunities by automation type to suggest specialized agents
+  const agentCandidates = opportunities.filter(
+    o => o.automationTypes.includes(AutomationType.DEDICATED_AGENT)
+  );
+
+  const documentSteps = opportunities.filter(
+    o => o.automationTypes.includes(AutomationType.DOCUMENT_PROCESSING)
+  );
+
+  const dataSteps = opportunities.filter(
+    o => o.automationTypes.includes(AutomationType.DATA_ENTRY) ||
+         o.automationTypes.includes(AutomationType.API_INTEGRATION)
+  );
+
+  const validationSteps = opportunities.filter(
+    o => o.indicators.some(i => i.toLowerCase().includes('validation'))
+  );
+
+  // Suggest document processing agent if applicable
+  if (documentSteps.length >= 2) {
+    suggestedAgents.push({
+      name: `${processName} Document Agent`,
+      purpose: 'Handle document generation, processing, and extraction tasks',
+      coveredSteps: documentSteps.map(s => s.stepNumber),
+      capabilities: [
+        'Generate documents from templates',
+        'Extract data from incoming documents',
+        'Convert between document formats',
+        'Populate forms automatically',
+      ],
+    });
+    integrationPoints.push('Document storage/management system integration required');
+  }
+
+  // Suggest data processing agent if applicable
+  if (dataSteps.length >= 3) {
+    suggestedAgents.push({
+      name: `${processName} Data Agent`,
+      purpose: 'Handle data entry, validation, and system integration tasks',
+      coveredSteps: dataSteps.map(s => s.stepNumber),
+      capabilities: [
+        'Retrieve data from source systems',
+        'Validate and transform data',
+        'Update target systems',
+        'Handle data reconciliation',
+      ],
+    });
+    integrationPoints.push('API access to source and target systems required');
+  }
+
+  // Suggest validation agent if applicable
+  if (validationSteps.length >= 2) {
+    suggestedAgents.push({
+      name: `${processName} Validation Agent`,
+      purpose: 'Perform automated validation and quality checks',
+      coveredSteps: validationSteps.map(s => s.stepNumber),
+      capabilities: [
+        'Validate data against business rules',
+        'Check for completeness and accuracy',
+        'Flag exceptions for human review',
+        'Generate validation reports',
+      ],
+    });
+    integrationPoints.push('Access to validation rules and reference data required');
+  }
+
+  // If there are agent candidates but no specialized agent suggested, suggest a general process agent
+  if (agentCandidates.length >= 2 && suggestedAgents.length === 0) {
+    suggestedAgents.push({
+      name: `${processName} Assistant Agent`,
+      purpose: 'Provide AI-assisted support for complex process steps',
+      coveredSteps: agentCandidates.map(s => s.stepNumber),
+      capabilities: [
+        'Answer questions about the process',
+        'Assist with decision-making',
+        'Provide recommendations based on context',
+        'Handle exceptions and edge cases',
+      ],
+    });
+    integrationPoints.push('Access to process knowledge base and historical data required');
+  }
+
+  return { suggestedAgents, integrationPoints };
+}
+
+/**
+ * Format automation analysis for display
+ */
+function formatAutomationAnalysis(analysis: ProcessAutomationAnalysis): string {
+  let output = `# Automation Analysis: ${analysis.processName}\n\n`;
+  output += `**Process ID:** ${analysis.processId}\n`;
+  output += `**Analysis Date:** ${new Date(analysis.analysisTimestamp).toLocaleDateString()}\n\n`;
+
+  // Summary section
+  output += `## Summary\n\n`;
+  output += `| Metric | Value |\n`;
+  output += `|--------|-------|\n`;
+  output += `| Total Steps Analyzed | ${analysis.summary.totalSteps} |\n`;
+  output += `| Automation Candidates | ${analysis.summary.automationCandidates} |\n`;
+  output += `| High Confidence Opportunities | ${analysis.summary.highConfidenceOpportunities} |\n`;
+  output += `| Overall Automation Potential | **${analysis.summary.overallAutomationPotential.toUpperCase()}** |\n\n`;
+
+  if (analysis.summary.primaryAutomationTypes.length > 0) {
+    output += `**Primary Automation Types:** ${analysis.summary.primaryAutomationTypes.join(', ')}\n\n`;
+  }
+
+  // Opportunities section
+  if (analysis.opportunities.length > 0) {
+    output += `## Automation Opportunities\n\n`;
+
+    for (const opp of analysis.opportunities) {
+      const confidenceIcon =
+        opp.confidence === AutomationConfidence.HIGH ? '🟢' :
+        opp.confidence === AutomationConfidence.MEDIUM ? '🟡' : '🔴';
+
+      output += `### ${opp.stepNumber} ${opp.stepText}\n\n`;
+      output += `- **Type:** ${opp.stepType}\n`;
+      output += `- **Confidence:** ${confidenceIcon} ${opp.confidence}\n`;
+      output += `- **Complexity:** ${opp.estimatedComplexity}\n`;
+      output += `- **Automation Types:** ${opp.automationTypes.join(', ')}\n`;
+      output += `- **Rationale:** ${opp.rationale}\n`;
+      output += `- **Indicators:** ${opp.indicators.join('; ')}\n\n`;
+    }
+  } else {
+    output += `## Automation Opportunities\n\n`;
+    output += `No strong automation candidates identified. This process may require significant human judgment.\n\n`;
+  }
+
+  // Recommendations section
+  output += `## Recommendations\n\n`;
+  analysis.recommendations.forEach((rec, index) => {
+    output += `${index + 1}. ${rec}\n`;
+  });
+  output += '\n';
+
+  // Agent design suggestions
+  if (analysis.agentDesignSuggestions.suggestedAgents.length > 0) {
+    output += `## Suggested AI Agents\n\n`;
+
+    for (const agent of analysis.agentDesignSuggestions.suggestedAgents) {
+      output += `### ${agent.name}\n\n`;
+      output += `**Purpose:** ${agent.purpose}\n\n`;
+      output += `**Covered Steps:** ${agent.coveredSteps.join(', ')}\n\n`;
+      output += `**Capabilities:**\n`;
+      agent.capabilities.forEach(cap => {
+        output += `- ${cap}\n`;
+      });
+      output += '\n';
+    }
+
+    if (analysis.agentDesignSuggestions.integrationPoints.length > 0) {
+      output += `### Integration Requirements\n\n`;
+      analysis.agentDesignSuggestions.integrationPoints.forEach(point => {
+        output += `- ${point}\n`;
+      });
+      output += '\n';
+    }
+  }
+
+  return output;
 }
 
 /**
