@@ -14,6 +14,7 @@ Alpha verion of the Model Context Protocol (MCP) server for Nintex Process Manag
 - **Process Diagrams**: Display interactive process maps using embedded iframes (Minimode)
 - **Group Hierarchy**: Retrieve organizational structure of process groups
 - **List Processes**: Get paginated lists of all processes
+- **AI Process Review**: Analyze processes for automation opportunities (API integrations, RPA bots, AI agents)
 
 ### Phase 2 (Planned)
 
@@ -392,6 +393,39 @@ Get the process diagram for process "d93f4301-83a3-4970-996e-223c2e08b168"
 
 **Note:** This tool generates a Minimode permalink URL and embeds it in an iframe that can be displayed in MCP clients that support HTML content (like Claude Desktop).
 
+### 9. `review_process_for_automation`
+
+Analyze a process to identify automation opportunities. Reviews each activity and task to suggest where automation could be applied, including API integrations, RPA bots, dedicated AI agents, or workflow automation.
+
+**Parameters:**
+- `processId` (required): The unique ID of the process to analyze (UUID format)
+- `includeAgentDesign` (optional): Whether to include suggestions for dedicated AI agents (default: true)
+
+**Example:**
+```
+Analyze process "d93f4301-83a3-4970-996e-223c2e08b168" for automation opportunities
+```
+
+**Returns:** A comprehensive automation analysis including:
+- **Summary**: Total steps analyzed, automation candidates, overall automation potential (low/medium/high)
+- **Opportunities**: Step-by-step analysis with automation types, confidence levels, and rationale
+- **Recommendations**: Prioritized actions for implementing automation
+- **Agent Design Suggestions**: Proposed AI agents with specific capabilities and integration requirements
+
+**Automation Types Detected:**
+| Type | Description |
+|------|-------------|
+| `api_integration` | Steps that could connect systems via APIs |
+| `rpa_bot` | Repetitive UI-based tasks suitable for RPA |
+| `dedicated_agent` | Complex steps that could benefit from AI agents |
+| `workflow_automation` | Process orchestration and hand-offs |
+| `document_processing` | Document generation, extraction, and handling |
+| `data_entry` | Manual data input that could be automated |
+| `notification` | Alerts and communications that could be triggered automatically |
+| `approval_workflow` | Sign-off processes that could be digitized |
+
+**Note:** This tool follows MCP best practices for context window management, automatically truncating large outputs to prevent context overflow.
+
 ## Usage Examples
 
 Once configured in your MCP client (e.g., Claude Desktop), you can ask questions like:
@@ -407,6 +441,10 @@ Once configured in your MCP client (e.g., Claude Desktop), you can ask questions
 - "Show me the organizational structure of all process groups"
 - "List all processes in the system"
 - "What processes exist in the Finance department?"
+- "Analyze the onboarding process for automation opportunities"
+- "What parts of our invoice processing workflow could be automated with RPA?"
+- "Review the customer support process and suggest where we could use AI agents"
+- "Which steps in the procurement process are good candidates for API integration?"
 
 ## Regional Endpoints
 
