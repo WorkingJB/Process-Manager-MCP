@@ -1,0 +1,300 @@
+{
+  "_comment": "Full example of a Nintex Process Manager process body following best practices.",
+  "_best_practices": [
+    "Activity names: verb-noun phrase, ≤ 60 chars, title case",
+    "Tasks: one specific action, starts with a verb, ≤ 120 chars",
+    "Objective: WHY the process exists (not WHAT it does)",
+    "Background: scope, context, who it applies to",
+    "Documents linked at task level (not activity level)",
+    "Sub-processes linked via task-level ProcessUniqueId"
+  ],
+  "Id": 1476,
+  "UniqueId": "f5698de9-1956-4095-9d6f-edaf6e28f022",
+  "Name": "Employee Onboarding",
+  "StateId": 1,
+  "Objective": "Ensure new employees are integrated into the organisation efficiently, compliantly, and with a positive experience from day one.",
+  "OwnerId": 42,
+  "ExpertId": 43,
+  "GroupId": 10,
+  "GroupUniqueId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "Background": "Applies to all permanent and fixed-term employees joining the organisation. Contractors follow a separate onboarding checklist. This process begins once an offer letter is signed and ends at the 30-day check-in.",
+  "Expert": "Jane Smith",
+  "Owner": "John Doe",
+  "Group": "Human Resources",
+  "State": "Active",
+  "ProcessRevisionEditId": 8970,
+  "Version": "4.0",
+  "Inputs": {
+    "Input": []
+  },
+  "Outputs": {
+    "Output": []
+  },
+  "LinkedStakeholders": {
+    "LinkedStakeholder": []
+  },
+  "ProcessProcedures": {
+    "Activity": [
+      {
+        "Id": 0,
+        "UniqueId": "act-0001-uuid-replace-me",
+        "Number": "1",
+        "Text": "Prepare offer and start documentation",
+        "OwnerId": null,
+        "OwnerText": "HR Coordinator",
+        "IsManuallyNamed": false,
+        "ChildProcessProcedures": {
+          "Task": [
+            {
+              "Id": 0,
+              "UniqueId": "task-0001-uuid-replace-me",
+              "Number": "1.1",
+              "Text": "Issue signed offer letter to new employee",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "offer-letter-template-uuid",
+              "DocumentName": "Offer Letter Template",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0002-uuid-replace-me",
+              "Number": "1.2",
+              "Text": "Send New Starter Form to employee for completion",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "new-starter-form-uuid",
+              "DocumentName": "New Starter Form",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0003-uuid-replace-me",
+              "Number": "1.3",
+              "Text": "Confirm start date and role details with hiring manager",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": null,
+              "DocumentName": null,
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            }
+          ]
+        }
+      },
+      {
+        "Id": 0,
+        "UniqueId": "act-0002-uuid-replace-me",
+        "Number": "2",
+        "Text": "Set up systems and access",
+        "OwnerId": null,
+        "OwnerText": "IT Support",
+        "IsManuallyNamed": false,
+        "ChildProcessProcedures": {
+          "Task": [
+            {
+              "Id": 0,
+              "UniqueId": "task-0004-uuid-replace-me",
+              "Number": "2.1",
+              "Text": "Complete IT new starter setup process",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": null,
+              "DocumentName": null,
+              "ProcessUniqueId": "it-setup-process-uuid",
+              "ProcessName": "IT New Starter Setup",
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0005-uuid-replace-me",
+              "Number": "2.2",
+              "Text": "Assign role-based system permissions per Access Matrix",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "access-matrix-uuid",
+              "DocumentName": "System Access Matrix",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            }
+          ]
+        }
+      },
+      {
+        "Id": 0,
+        "UniqueId": "act-0003-uuid-replace-me",
+        "Number": "3",
+        "Text": "Conduct orientation and induction",
+        "OwnerId": null,
+        "OwnerText": "HR Coordinator",
+        "IsManuallyNamed": false,
+        "ChildProcessProcedures": {
+          "Task": [
+            {
+              "Id": 0,
+              "UniqueId": "task-0006-uuid-replace-me",
+              "Number": "3.1",
+              "Text": "Walk employee through company values and culture",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "culture-handbook-uuid",
+              "DocumentName": "Culture Handbook",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0007-uuid-replace-me",
+              "Number": "3.2",
+              "Text": "Complete mandatory compliance training modules",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "compliance-training-schedule-uuid",
+              "DocumentName": "Compliance Training Schedule",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0008-uuid-replace-me",
+              "Number": "3.3",
+              "Text": "Introduce employee to team and key stakeholders",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": null,
+              "DocumentName": null,
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            }
+          ]
+        }
+      },
+      {
+        "Id": 0,
+        "UniqueId": "act-0004-uuid-replace-me",
+        "Number": "4",
+        "Text": "Confirm payroll and benefits enrolment",
+        "OwnerId": null,
+        "OwnerText": "Payroll Officer",
+        "IsManuallyNamed": false,
+        "ChildProcessProcedures": {
+          "Task": [
+            {
+              "Id": 0,
+              "UniqueId": "task-0009-uuid-replace-me",
+              "Number": "4.1",
+              "Text": "Verify bank details and tax file information",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "tax-declaration-form-uuid",
+              "DocumentName": "Tax Declaration Form",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0010-uuid-replace-me",
+              "Number": "4.2",
+              "Text": "Enrol employee in superannuation and applicable benefits",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "benefits-enrolment-form-uuid",
+              "DocumentName": "Benefits Enrolment Form",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            }
+          ]
+        }
+      },
+      {
+        "Id": 0,
+        "UniqueId": "act-0005-uuid-replace-me",
+        "Number": "5",
+        "Text": "Complete 30-day check-in",
+        "OwnerId": null,
+        "OwnerText": "Hiring Manager",
+        "IsManuallyNamed": false,
+        "ChildProcessProcedures": {
+          "Task": [
+            {
+              "Id": 0,
+              "UniqueId": "task-0011-uuid-replace-me",
+              "Number": "5.1",
+              "Text": "Schedule and conduct 30-day check-in meeting",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": "30-day-checkin-template-uuid",
+              "DocumentName": "30-Day Check-In Template",
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0012-uuid-replace-me",
+              "Number": "5.2",
+              "Text": "Record check-in outcomes and any follow-up actions",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": null,
+              "DocumentName": null,
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            },
+            {
+              "Id": 0,
+              "UniqueId": "task-0013-uuid-replace-me",
+              "Number": "5.3",
+              "Text": "Update HRIS system to mark onboarding as complete",
+              "OwnerId": null,
+              "OwnerText": null,
+              "DocumentUniqueId": null,
+              "DocumentName": null,
+              "ProcessUniqueId": null,
+              "ProcessName": null,
+              "HasNote": false,
+              "Note": null,
+              "IsDecision": false
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

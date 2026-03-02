@@ -1,0 +1,24 @@
+{
+  "_comment": "Example PUT /Api/v1/Processes/{processUniqueId} request body.",
+  "_critical": "ProcessJson MUST be a JSON-encoded string (double-serialized), not an object. Serialize the process object to a string first, then place it as the value of ProcessJson.",
+  "_workflow": [
+    "1. GET /Api/v1/Processes/{processUniqueId} to fetch current process",
+    "2. Extract processJson object from response",
+    "3. Extract ProcessRevisionEditId from processJson",
+    "4. Modify ProcessProcedures.Activity array as needed",
+    "5. Serialize modified processJson to a JSON string",
+    "6. Build this request body with ProcessJson = that string",
+    "7. PUT /Api/v1/Processes/{processUniqueId} with this body"
+  ],
+  "ProcessJson": "{\"Id\":1476,\"UniqueId\":\"f5698de9-1956-4095-9d6f-edaf6e28f022\",\"Name\":\"Employee Onboarding\",\"StateId\":1,\"Objective\":\"Ensure new employees are integrated efficiently.\",\"ProcessRevisionEditId\":8970,\"ProcessProcedures\":{\"Activity\":[{\"Id\":0,\"UniqueId\":\"act-0001-uuid\",\"Number\":\"1\",\"Text\":\"Prepare offer and start documentation\",\"OwnerText\":\"HR Coordinator\",\"ChildProcessProcedures\":{\"Task\":[{\"Id\":0,\"UniqueId\":\"task-0001-uuid\",\"Number\":\"1.1\",\"Text\":\"Issue signed offer letter to new employee\",\"DocumentUniqueId\":\"offer-letter-template-uuid\",\"DocumentName\":\"Offer Letter Template\",\"IsDecision\":false}]}}]}}",
+  "ChangeDescription": "Added offer letter task with document link",
+  "DoSubmitForApproval": false,
+  "DoPublish": false,
+  "SuppressChangeNotification": false,
+  "SharedActivityCollectionEditModel": {
+    "ActivitiesToDelete": [],
+    "ActivitiesToShare": [],
+    "ActivitiesToUnlink": []
+  },
+  "VariantConnectionChangeStates": []
+}
