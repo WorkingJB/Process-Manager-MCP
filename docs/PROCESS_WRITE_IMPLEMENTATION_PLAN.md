@@ -170,9 +170,30 @@ X-Requested-With: XMLHttpRequest
 
 ---
 
-## 4. Data & Examples Needed
+## 4. Official Nintex Writing Rules Summary
 
-### 4a. Example Files to Create (see `examples/` directory)
+Source: https://help.nintex.com/en-US/promapp/Processes/ProcessWriting.htm
+
+| Rule | Detail |
+|---|---|
+| Verb-first (Technique 3) | **All** process names, activity names, and task names must start with a verb |
+| 80% rule (Technique 1) | Only document steps performed ~80% of the time; exceptions go in notes |
+| Activity limit (Technique 2) | Maximum **10 activities** per process |
+| Task limit | Aim for ~**10 tasks or notes** per activity |
+| Optional steps (Technique 5) | Use "if required/needed/appropriate"; always add a note explaining when |
+| Note titles | Must be phrased as **a question** (e.g. "What if the supplier is overseas?") |
+| Decisions (Technique 7) | Only for critical flow-impacting branches; low-level decisions go in notes |
+| Sub-processes (Technique 4) | Break at >10 activities or when steps are shared across processes |
+| Documents (Technique 6) | Attach at task level; reduce process map clutter with guides |
+
+**Correction from previous version:** Process names also start with a verb.
+"Employee Onboarding" is wrong; "Onboard New Employee" is correct.
+
+---
+
+## 5. Data & Examples Needed
+
+### 5a. Example Files to Create (see `examples/` directory)
 
 | File | Purpose |
 |---|---|
@@ -182,7 +203,7 @@ X-Requested-With: XMLHttpRequest
 | `examples/activity-with-document-link.json` | Activity/task with an embedded document reference |
 | `examples/activity-with-subprocess-link.json` | Activity/task that links to another process |
 
-### 4b. TypeScript Types Needed (additions to `config.ts`)
+### 5b. TypeScript Types Needed (additions to `config.ts`)
 
 ```typescript
 // Full Activity with all known fields
@@ -242,7 +263,7 @@ interface UpdateProcessRequest {
 }
 ```
 
-### 4c. Nintex Best Practices — Agent Instructions
+### 5c. Nintex Best Practices — Agent Instructions
 
 These must be embedded in the MCP tool descriptions so agents follow them automatically.
 See `docs/NINTEX_AUTHORING_BEST_PRACTICES.md` for the full guide.
@@ -258,7 +279,7 @@ Summary for tool prompts:
 
 ---
 
-## 5. New Tool Specifications
+## 6. New Tool Specifications
 
 ### Tool: `create_process`
 
@@ -308,7 +329,7 @@ Returns: success, processUniqueId, changeDescription applied
 
 ---
 
-## 6. Gaps — What Needs Investigation
+## 7. Gaps — What Needs Investigation
 
 The following require a live API call against a real Process Manager instance
 (or documentation) to confirm before finalising the implementation:
@@ -325,7 +346,7 @@ The following require a live API call against a real Process Manager instance
 
 ---
 
-## 7. Implementation Order
+## 8. Implementation Order
 
 1. **Create example files and type definitions** — unblocks agent testing
 2. **Add `update_process_content` tool** — simpler (no create flow, reuses existing GET)

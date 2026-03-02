@@ -54,9 +54,13 @@ See `docs/PROCESS_WRITE_IMPLEMENTATION_PLAN.md` for the full design.
 - `SharedActivityCollectionEditModel.ActivitiesToDelete` must list UniqueIds of any removed activities to avoid orphan data.
 
 ### Best practices enforcement
-- All agent-authored processes MUST follow `docs/NINTEX_AUTHORING_BEST_PRACTICES.md`
+- All agent-authored processes MUST follow `docs/NINTEX_AUTHORING_BEST_PRACTICES.md` (aligned with https://help.nintex.com/en-US/promapp/Processes/ProcessWriting.htm)
 - Embed best-practice rules in tool `description` fields so agents follow them without additional prompting
-- Activity names: verb-noun, ≤ 60 chars. Task names: single action, starts with verb, ≤ 120 chars.
+- **Verb-first rule (Technique 3):** Process names, activity names, AND task names all start with a verb — "Onboard New Employee", not "Employee Onboarding"
+- **Activity limit (Technique 2):** Max 10 activities per process; ~10 tasks per activity
+- **80% rule (Technique 1):** Document the normal flow only; exceptions go in notes
+- **Notes:** Use for < 20%-frequency exceptions; note titles must be phrased as questions
+- **Decisions (Technique 7):** Only for critical flow-impacting branches; low-level decisions go in notes
 - Document links go at the **task level** (`DocumentUniqueId`), not activity level
 - Sub-process links go at the **task level** (`ProcessUniqueId`), mutually exclusive with document links
 

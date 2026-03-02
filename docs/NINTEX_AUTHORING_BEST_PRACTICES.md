@@ -1,133 +1,176 @@
 # Nintex Process Manager — Authoring Best Practices for AI Agents
 
 This guide defines the standards that AI agents MUST follow when creating or updating
-processes via the MCP tools. These rules are derived from Nintex Process Manager best
-practices and are embedded in tool descriptions to enforce compliance automatically.
+processes via the MCP tools. Rules are sourced directly from the
+[Nintex Process Writing Guidelines](https://help.nintex.com/en-US/promapp/Processes/ProcessWriting.htm)
+and the [Nintex Glossary](https://help.nintex.com/en-US/promapp/Glossary.htm).
 
 ---
 
-## 1. Process Structure
+## Core Principle: Keep It Simple
 
-### Overall Shape
-- **5–15 activities** per process is the ideal range
-- If a process exceeds 15 activities, split it into a parent process with sub-process links
-- If a process has fewer than 3 activities, consider whether it should be a checklist document instead
-- Each process must have a clear **start trigger** (what kicks it off) and **end state** (what done looks like)
+The goal is to capture how a process runs **90% of the time** — a clean flow of activities
+delivering a clear output. Processes that try to document every variation become unreadable.
+
+---
+
+## 1. Start Every Name with a Verb (Technique 3)
+
+**This applies to process names, activity names, AND task names.**
+
+Processes are instructions for "how to do something". Verbs make that explicit.
+Ask: *"What is the person expected to do?"*
+
+| Level | Good (starts with verb) | Bad (no verb) |
+|---|---|---|
+| Process | "Recruit New Staff Member" | "New Staff Member Recruitment" |
+| Process | "Onboard New Employee" | "Employee Onboarding" |
+| Activity | "Prepare offer documentation" | "Offer documentation" |
+| Activity | "Conduct orientation session" | "Orientation" |
+| Task | "Issue signed offer letter to new employee" | "Offer letter" |
+| Task | "Complete the Privacy Impact Assessment form" | "PIA form" |
+
+---
+
+## 2. Document the Normal Flow — 80% Rule (Technique 1)
+
+Only document the steps that **normally** occur — the steps performed roughly **80% of the time**.
+
+- Covering every variation makes the process too complex to understand
+- Ask: *"Is this step normally performed?"*
+- If no → it's a variation or exception → capture it as a **note**, not a step
+
+---
+
+## 3. Process Structure and Limits
 
 ### Process Name
-- Title case, noun-phrase format: "Employee Onboarding", "Supplier Invoice Approval"
-- Must be unique within its group
+- Starts with a **verb**, title case (e.g. "Recruit New Staff Member")
 - ≤ 80 characters
-- No acronyms unless universally understood within the organisation
+- Unique within its group
 
 ### Objective (required)
 - 1–2 sentences stating **WHY** this process exists, not what it does
-- Good: *"Ensure new employees are integrated into the organisation efficiently, compliantly, and with a positive experience from day one."*
+- Good: *"Ensure new employees are integrated into the organisation efficiently and compliantly from their first day."*
 - Bad: *"This process describes the steps involved in onboarding employees."*
 
 ### Background (recommended)
-- State the **scope**: who/what this process applies to
-- State **exclusions**: what is out of scope
-- Reference **related processes or policies** if relevant
-- Good: *"Applies to all permanent and fixed-term employees. Contractors follow a separate onboarding checklist. Begins once an offer letter is signed."*
+- Scope: who/what this process applies to
+- Exclusions: what is out of scope
+- Related processes or policies if relevant
+
+### Inputs and Outputs
+- Link inputs/outputs to the related processes they come from or lead to
+- Almost all inputs and outputs connect to other processes — always link them
 
 ---
 
-## 2. Activities
+## 4. Activities (Technique 2)
 
-### Naming Convention
-- **Verb-noun phrase**, title case
-- The verb describes the action performed: *Prepare*, *Review*, *Approve*, *Submit*, *Confirm*, *Conduct*, *Update*
-- ≤ 60 characters
-- Good examples:
-  - "Prepare onboarding documentation"
-  - "Review invoice for accuracy"
-  - "Obtain management approval"
-  - "Update customer record"
-- Bad examples:
-  - "Onboarding documentation" (missing verb)
-  - "Documentation preparation and review of all relevant onboarding materials for new starters" (too long)
-  - "DO THE REVIEW" (incorrect casing and tone)
+### Limit
+- **Maximum 10 activities per process** — if more are needed, break into sub-processes
+- Minimum: don't create a process for something with only 2–3 steps (use a document/checklist instead)
 
-### Activity Owner (OwnerText)
-- Assign a **role name**, not a person's name (roles are more durable than individuals)
+### Naming
+- Verb-noun phrase, title case, ≤ 60 characters
+- Starts with an action verb: *Prepare*, *Review*, *Approve*, *Submit*, *Confirm*, *Conduct*, *Update*
+
+### Grouping rule
+- Group tasks that are performed **at the same time** or **by the same role** into one activity
+- Activities represent major phases of work, not individual micro-steps
+
+### Owner (OwnerText)
+- Use a **role name**, not a person's name — roles are durable; people change
 - Good: "HR Coordinator", "Finance Manager", "IT Support"
-- Bad: "John Smith", "Someone in HR"
-- If genuinely unowned, leave `OwnerText: null`
-
-### Activity Ordering
-- Activities should flow logically — each activity is a meaningful phase of work
-- Avoid "Admin" catch-all activities; break them into specific named phases
-- Parallel activities (things done simultaneously) can be presented in sequence; note parallelism in task text or notes
+- Bad: "John Smith", "someone in HR"
 
 ---
 
-## 3. Tasks
+## 5. Tasks
 
-### Naming Convention
-- Specific, actionable statement starting with a **verb**
-- Describes **one action** that can be independently verified as complete
-- ≤ 120 characters
-- Good examples:
-  - "Issue signed offer letter to new employee"
-  - "Complete the Privacy Impact Assessment form"
-  - "Confirm start date with hiring manager"
-  - "File invoice in the accounts payable folder"
-- Bad examples:
-  - "Paperwork" (not specific, no verb)
-  - "Review and update and file all relevant documentation" (multiple actions — split into separate tasks)
-  - "Do this" (meaningless)
+### Limit
+- Aim for **~10 tasks or notes per activity**
 
-### Task Granularity
-- One action per task — if a task has "and" in it, consider splitting
-- Tasks should be testable: a reviewer should be able to determine whether it's done
-- Avoid duplicating the activity name in every task name
+### Naming
+- Starts with a **verb**, one specific action, ≤ 120 characters
+- The action must be independently verifiable as done or not done
+- If a task has "and" in it, consider splitting it
 
-### Task Notes
-- Use `Note` field for conditional logic, exceptions, or guidance that doesn't fit in the task name
-- Good note: *"If the supplier is overseas, escalate to the Chief Privacy Officer before proceeding."*
-- Notes should be concise — if a note requires more than 2 sentences, consider whether a linked document is more appropriate
+### Optional steps — use "If" statements (Technique 5)
+- For steps that aren't always performed, use: *"if required"*, *"if needed"*, *"if appropriate"*
+- Always supplement an "if" task with a **note** explaining the circumstances
+- Good: *"Escalate to Chief Privacy Officer, if required"*
+- Bad: Adding a separate activity branch for a 10%-frequency exception
 
 ---
 
-## 4. Document References
+## 6. Notes
 
-### When to Link a Document
-- Link a document when the task **requires** the person to use, complete, or reference a specific file
-- Common link types: forms, templates, checklists, policy documents, guides, registers
+### When to use notes (not steps)
+- Exceptions or variations that occur **less than 20% of the time**
+- Low-level decisions that don't affect the main process flow
+- Circumstances under which an optional "if" task applies
+- Guidance that would clutter the step text
 
-### How to Reference (technical)
-- Use `search_documents` tool to find the document by name
-- Extract the `DocumentUniqueId` from the search result
-- Place it in the task's `DocumentUniqueId` field along with `DocumentName`
-- **Documents link at the TASK level**, not the activity level
-- One task can link to **one document only** — if multiple documents are needed, create a task per document
+### Note title rule
+- **Always phrase the note title as a question**
+- Good: *"What if the supplier is based overseas?"*, *"When is escalation required?"*
+- Bad: *"Overseas suppliers"*, *"Escalation process"*
 
-### Naming the Link
-- `DocumentName` should match the actual document title as found in search
-- Do not paraphrase or abbreviate — use the exact document name from the system
-
----
-
-## 5. Sub-Process References
-
-### When to Link a Sub-Process
-- When the task triggers a **separate, well-defined process** that exists (or should exist) in Process Manager
-- Common patterns: IT provisioning, contract execution, procurement approval
-
-### How to Reference (technical)
-- Use `search_processes` or `get_group_hierarchy` to find the process UUID
-- Place in `ProcessUniqueId` and `ProcessName` on the task
-- `ProcessUniqueId` and `DocumentUniqueId` are **mutually exclusive** — a task links to one or the other, not both
-
-### Task Text with Sub-Process Links
-- The task name should start with "Complete the [Process Name] process"
-- Good: "Complete the IT Hardware Provisioning process"
-- Bad: "See IT for setup" (vague, no explicit link)
+### Note body
+- Concise answer to the question posed in the title
+- If the answer requires more than 2–3 sentences, link to a document instead
 
 ---
 
-## 6. Process Lifecycle Fields
+## 7. Decisions
+
+### Use decision diamonds only for critical flow changes (Technique 7)
+- Reserve decisions for points where the **overall process flow** branches significantly
+- A decision can lead to another process or a single alternate activity that terminates the process
+
+### Low-level decisions go in notes
+- *"What if it's a weekend?"* → note, not a decision diamond
+- *"What if it's an Executive Manager we're hiring?"* → note, not a decision diamond
+- For complex conditional logic, use a **decision matrix** in a linked document
+
+---
+
+## 8. Documents and Guides (Technique 6)
+
+### When to link a document
+- When the task requires the person to use, complete, or reference a specific file
+- When detailed step-by-step system instructions would clutter the process map
+- Common types: forms, templates, checklists, policy documents, system guides, registers
+
+### How to attach (technical)
+- Use `search_documents` to find the document and get its `DocumentUniqueId`
+- Set `DocumentUniqueId` and `DocumentName` on the **task** (not the activity)
+- One task can link to **one document only** — create separate tasks for separate documents
+- `DocumentUniqueId` and `ProcessUniqueId` are **mutually exclusive** per task
+
+### DocumentName
+- Use the exact document title as it appears in the system (from search results)
+
+---
+
+## 9. Sub-Processes (Technique 4)
+
+### When to create sub-processes
+- When a process exceeds **10 activities**
+- When a set of steps is **shared across multiple processes** (avoids duplication)
+- When a distinct workflow is well-defined enough to stand alone
+
+### Linking sub-processes
+- Link at the **task level** using `ProcessUniqueId` and `ProcessName`
+- Task text: start with a verb referencing the sub-process
+  - Good: *"Complete the IT Hardware Provisioning process"*
+  - Bad: *"See IT for setup"*
+- Use `search_processes` or `get_group_hierarchy` to find the sub-process UUID
+
+---
+
+## 10. Process Lifecycle Fields
 
 ### StateId
 | Value | Meaning |
@@ -136,41 +179,47 @@ practices and are embedded in tool descriptions to enforce compliance automatica
 | 2 | Draft / In Progress |
 | 3 | Archived |
 
-When creating new processes, they start as Draft (StateId 2) unless `DoPublish: true`.
-
 ### DoPublish vs DoSubmitForApproval
-- `DoPublish: true` — immediately publishes (use only if no approval workflow configured)
-- `DoSubmitForApproval: true` — sends to process owner/approver for review (preferred for real environments)
+- `DoPublish: true` — immediately publishes (only if no approval workflow is configured)
+- `DoSubmitForApproval: true` — routes to approver (preferred for real environments)
 - Both `false` — saves as draft (safest default for agent-created content)
 
 ---
 
-## 7. What NOT to Do
+## 11. What NOT to Do
 
-| Anti-Pattern | Issue | Fix |
+| Anti-Pattern | Why it's wrong | Fix |
 |---|---|---|
-| Activities named as nouns only ("Invoice Processing") | Unclear who does what | Use verb-noun: "Process supplier invoice" |
-| Tasks with multiple actions joined by "and" | Hard to track completion | Split into separate tasks |
-| Task text = Activity text | Redundant, no additional value | Make tasks more specific than the activity |
-| Linking document at activity level | Not supported by the API | Link only at task level |
-| PersonName as OwnerText | Breaks when person leaves | Use role name instead |
-| Missing Objective | Reduces process discoverability and usefulness | Always provide a 1–2 sentence objective |
-| More than 15 activities in one process | Hard to read, hard to maintain | Split using sub-process links |
-| Duplicate UUIDs | API will reject or corrupt data | Always generate a new UUID per activity/task |
+| Process name without a verb ("Employee Onboarding") | Not an instruction; hard to find | Start with verb: "Onboard New Employee" |
+| Activity name without a verb ("Invoice Processing") | Unclear what the performer does | "Process supplier invoice" |
+| Tasks with multiple actions joined by "and" | Can't verify completion independently | Split into separate tasks |
+| Decision diamond for a 10%-edge-case | Clutters the process flow | Use a note with a question title |
+| Note title as a statement ("Overseas suppliers") | Doesn't guide the reader | Rephrase as question: "What if the supplier is overseas?" |
+| > 10 activities in one process | Hard to read; user won't engage | Split into sub-processes |
+| ~10 tasks per activity exceeded significantly | Activity is doing too much | Break into two activities |
+| Person's name as OwnerText | Breaks when person leaves | Use role name |
+| Documenting every exception as a step | Violates the 80% rule | Move exceptions to notes |
+| DocumentUniqueId AND ProcessUniqueId on same task | API conflict | One link per task only |
+| Missing Objective | Reduces discoverability | Always provide 1–2 sentence objective |
 
 ---
 
-## 8. Agent Checklist Before Submitting a Process
+## 12. Agent Checklist Before Submitting a Process
 
-- [ ] Process name is title case, ≤ 80 chars, verb-free noun phrase
+- [ ] Process name starts with a verb, title case, ≤ 80 chars
 - [ ] Objective is 1–2 sentences stating WHY, not WHAT
 - [ ] Background defines scope and exclusions
-- [ ] 5–15 activities (or sub-process links used if more needed)
+- [ ] ≤ 10 activities (sub-process links used if more are needed)
 - [ ] Each activity uses verb-noun naming, ≤ 60 chars
-- [ ] Each task is a single action starting with a verb, ≤ 120 chars
+- [ ] Each task starts with a verb, single action, ≤ 120 chars
+- [ ] Each activity has ~10 tasks or fewer
+- [ ] Optional steps use "if required/needed/appropriate" + a supporting note
+- [ ] Notes are used for < 20%-frequency exceptions (not separate steps)
+- [ ] Note titles are phrased as questions
+- [ ] Decision diamonds used only for critical flow-impacting branches
 - [ ] Document links are at task level with correct UUID from `search_documents`
 - [ ] Sub-process links use correct UUID from `search_processes`
 - [ ] No task has both `DocumentUniqueId` and `ProcessUniqueId` set
 - [ ] Activity/task `OwnerText` uses a role name, not a person's name
 - [ ] All new activities/tasks have `Id: 0` and a fresh UUID
-- [ ] `ProcessRevisionEditId` is taken from the current GET response (not hardcoded)
+- [ ] `ProcessRevisionEditId` taken from a fresh GET (not hardcoded)

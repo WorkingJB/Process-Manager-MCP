@@ -7,7 +7,8 @@
     "Confirm whether activities can be included at creation or must be added via a separate PUT",
     "Confirm OwnerId/ExpertId format — user numeric ID from SCIM lookup"
   ],
-  "Name": "Supplier Invoice Approval",
+  "Name": "Approve Supplier Invoice",
+  "_name_note": "Starts with a verb (Approve). Per Nintex Technique 3: all process names must start with a verb.",
   "GroupUniqueId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "Objective": "Ensure all supplier invoices are reviewed, approved, and processed accurately within agreed payment terms.",
   "Background": "Applies to all invoices received from third-party suppliers. Internal cost transfers follow a separate process. This process begins when an invoice is received and ends when payment is confirmed.",
