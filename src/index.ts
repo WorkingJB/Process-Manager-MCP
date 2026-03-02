@@ -434,6 +434,61 @@ Use this tool to assess process improvement opportunities and plan automation in
       required: ['processId'],
     },
   },
+  {
+    name: 'update_process',
+    description:
+      `Update an existing process in Process Manager by saving a modified processJson back via the API.
+
+Workflow:
+1. Call get_process to retrieve the current processJson
+2. Modify the processJson as needed (add/edit activities, change metadata, attach documents)
+3. Call update_process with the modified processJson
+
+Key rules for modifying processJson:
+- New activities require a negative integer Id (e.g., -1, -2, -3) and a generated UUID for UniqueId
+- Activity numbers follow "1.0", "2.0", "3.0" format; Order is 0-indexed integer
+- ProcessProcedureType 7 = activity; ProcessProcedureType 3 = document/form child attachment
+- To attach a previously uploaded document to an activity, add to ChildProcessProcedures.Form[]:
+  { Id: -N, UniqueId: "<new-uuid>", ProcessProcedureType: 3, Text: "<filename>", Attachment: "", Number: "", DocumentId: <numeric-id>, DocumentUniqueId: "<uuid>", NetworkFileName: null, ChildProcessProcedures: {}, Order: 0 }
+- Keep ProcessRevisionEditId exactly as returned by get_process — the server uses it for versioning
+- Ownerships use Role array: [{ Id: <role-id>, Name: "<role-name>", IsVirtual: false }]
+- Use Id: 2, Name: "UNASSIGNED" for unassigned activities
+
+Examples:
+- Add a new activity to a process
+- Update an activity's text or role assignment
+- Change process objective, background, owner, or expert
+- Attach an uploaded document to an activity step`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process to update (UUID format)',
+        },
+        processJson: {
+          type: 'object',
+          description:
+            'The modified processJson object from get_process. Modify the fields you want to change and pass the full object here.',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes being made (appears in version history). Defaults to empty string.',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish the process after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId', 'processJson'],
+    },
+  },
 ];
 
 // Create MCP server
@@ -488,6 +543,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'review_process_for_automation':
         return await handleReviewProcessForAutomation(args);
+
+      case 'update_process':
+        return await handleUpdateProcess(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -985,6 +1043,129 @@ async function handleReviewProcessForAutomation(args: any) {
       {
         type: 'resource',
         resource: prepareJsonResource(analysis, `promapp://process/${processId}/automation-analysis`),
+      },
+    ],
+  };
+}
+
+/**
+ * Normalize processJson from GET response format to PUT request format.
+ *
+ * The GET response uses null for empty collections; the PUT API expects
+ * wrapper objects (e.g., { SearchKeyword: [] }) and empty {} for
+ * ChildProcessProcedures on activities.
+ */
+function normalizeProcessJsonForPut(processJson: any): any {
+  const normalized = { ...processJson };
+
+  // Scalar-keyed collection wrappers that may be null in the GET response
+  const collectionWrappers: Record<string, string> = {
+    SearchKeywords: 'SearchKeyword',
+    ProcessTags: 'ProcessTag',
+    Inputs: 'Input',
+    Outputs: 'Output',
+    Triggers: 'Trigger',
+    Targets: 'Target',
+    LinkedStakeholders: 'LinkedStakeholder',
+  };
+
+  for (const [field, itemKey] of Object.entries(collectionWrappers)) {
+    const val = normalized[field];
+    if (val === null || val === undefined) {
+      normalized[field] = { [itemKey]: [] };
+    } else if (Array.isArray(val)) {
+      // Bare array — wrap it
+      normalized[field] = { [itemKey]: val };
+    }
+    // Already an object with the right shape — leave as-is
+  }
+
+  // Stakeholders: null → { User: [], Role: [], Responsibility: [] }
+  if (normalized.Stakeholders === null || normalized.Stakeholders === undefined) {
+    normalized.Stakeholders = { User: [], Role: [], Responsibility: [] };
+  }
+
+  // Approvals: null → { User: [], Role: [], Responsibility: [] }
+  if (normalized.Approvals === null || normalized.Approvals === undefined) {
+    normalized.Approvals = { User: [], Role: [], Responsibility: [] };
+  }
+
+  // Activities: ChildProcessProcedures null → {}
+  if (Array.isArray(normalized.ProcessProcedures?.Activity)) {
+    normalized.ProcessProcedures = {
+      ...normalized.ProcessProcedures,
+      Activity: normalized.ProcessProcedures.Activity.map((activity: any) => ({
+        ...activity,
+        ChildProcessProcedures: activity.ChildProcessProcedures ?? {},
+      })),
+    };
+  }
+
+  return normalized;
+}
+
+/**
+ * Handle update_process tool
+ */
+async function handleUpdateProcess(args: any) {
+  const processId = args.processId as string;
+  const processJson = args.processJson as any;
+  const changeDescription = (args.changeDescription as string) || '';
+  const doPublish = args.doPublish ?? false;
+  const doSubmitForApproval = args.doSubmitForApproval ?? false;
+
+  console.error(`[UPDATE_PROCESS] Updating process: ${processId}`);
+
+  const normalizedJson = normalizeProcessJsonForPut(processJson);
+
+  const putBody = {
+    ProcessJson: JSON.stringify(normalizedJson),
+    ChangeDescription: changeDescription,
+    DoSubmitForApproval: doSubmitForApproval,
+    DoPublish: doPublish,
+    SuppressChangeNotification: true,
+    SharedActivityCollectionEditModel: {
+      ActivitiesToDelete: [],
+      ActivitiesToShare: [],
+      ActivitiesToUnlink: [],
+    },
+    VariantConnectionChangeStates: [],
+  };
+
+  const result = await authManager.apiRequest(
+    `/Api/v1/Processes/${processId}`,
+    {
+      method: 'PUT',
+      body: putBody,
+    }
+  );
+
+  const processName = processJson.Name || processId;
+  const activitiesCount = processJson.ProcessProcedures?.Activity?.length ?? 0;
+
+  let output = `# Process Updated Successfully\n\n`;
+  output += `**Process:** ${processName}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**Activities:** ${activitiesCount}\n`;
+  output += `**Change Description:** ${changeDescription || '(none)'}\n`;
+
+  if (doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: output,
+      },
+      {
+        type: 'resource',
+        resource: prepareJsonResource(result, `promapp://process/${processId}/update`),
       },
     ],
   };
