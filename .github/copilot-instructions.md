@@ -40,6 +40,46 @@ Quick, focused guidance for AI coding agents working on this repo.
 - SCIM API: hard-coded base `https://api.promapp.com/api/scim` in `config.ts` — `AuthManager.scimRequest` uses `PM_SCIM_API_KEY` as a bearer token.
 - Node-fetch is used for HTTP requests (`node-fetch` package).
 
+## Process Create & Update — New Tooling (In Progress)
+
+See `docs/PROCESS_WRITE_IMPLEMENTATION_PLAN.md` for the full design.
+
+### Two new tools are being designed
+- `create_process` — POST a new draft process to a group
+- `update_process_content` — PUT activity/task content into an existing process
+
+### Critical API behaviour
+- `PUT /Api/v1/Processes/{processUniqueId}` requires `ProcessJson` to be a **JSON-encoded string** (the process object serialized to a string), not an embedded object. Double-serialization is required.
+- Always GET the current process first to extract `ProcessRevisionEditId` before a PUT — it changes on every save and must match.
+- `SharedActivityCollectionEditModel.ActivitiesToDelete` must list UniqueIds of any removed activities to avoid orphan data.
+
+### Best practices enforcement
+- All agent-authored processes MUST follow `docs/NINTEX_AUTHORING_BEST_PRACTICES.md`
+- Embed best-practice rules in tool `description` fields so agents follow them without additional prompting
+- Activity names: verb-noun, ≤ 60 chars. Task names: single action, starts with verb, ≤ 120 chars.
+- Document links go at the **task level** (`DocumentUniqueId`), not activity level
+- Sub-process links go at the **task level** (`ProcessUniqueId`), mutually exclusive with document links
+
+### Example files
+- `examples/process-body-example.json` — full realistic process body (Employee Onboarding)
+- `examples/update-process-request.json` — complete PUT request body shape
+- `examples/create-process-request.json` — expected POST request shape (needs live API verification)
+- `examples/activity-with-document-link.json` — activity/task with document and note examples
+- `examples/activity-with-subprocess-link.json` — activity/task with sub-process link examples
+
+### New TypeScript types needed (in `config.ts`)
+- `FullActivity` — Activity with all known fields including OwnerText, IsManuallyNamed
+- `FullTask` — Task with DocumentUniqueId, ProcessUniqueId, Note, IsDecision
+- `CreateProcessRequest`, `UpdateProcessRequest`
+
+### Gaps to verify against live API before implementing
+- Exact POST body format for process creation
+- Full Activity/Task JSON schema (inspect a complex real process GET response)
+- Whether decisions/branches use a different schema than standard tasks
+- Correct format for activity numbering on new items
+
+---
+
 ## Developer tasks checklist (quick tips)
 - Adding/removing/modifying a tool: update the `TOOLS` array in `src/index.ts` and update tests in `test/` accordingly.
 - Adding new API calls: put request logic in `src/auth.ts` (or create a new helper file) and reuse token management.

@@ -1,0 +1,16 @@
+{
+  "_comment": "Example POST /Api/v1/Processes request body for creating a new process.",
+  "_status": "NEEDS VERIFICATION — POST endpoint format not confirmed. This is the expected shape based on the API pattern. Test against a live instance and update accordingly.",
+  "_investigation_needed": [
+    "Confirm the exact POST endpoint path",
+    "Confirm which fields are required vs optional",
+    "Confirm whether activities can be included at creation or must be added via a separate PUT",
+    "Confirm OwnerId/ExpertId format — user numeric ID from SCIM lookup"
+  ],
+  "Name": "Supplier Invoice Approval",
+  "GroupUniqueId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "Objective": "Ensure all supplier invoices are reviewed, approved, and processed accurately within agreed payment terms.",
+  "Background": "Applies to all invoices received from third-party suppliers. Internal cost transfers follow a separate process. This process begins when an invoice is received and ends when payment is confirmed.",
+  "OwnerId": 42,
+  "ExpertId": 43
+}

@@ -1,0 +1,65 @@
+{
+  "_comment": "Example of tasks that reference sub-processes (linked processes).",
+  "_usage": "Use search_processes or get_group_hierarchy to find the target process UUID, then place it in ProcessUniqueId.",
+  "_important": "A task can link to either a document OR a sub-process — not both. ProcessUniqueId and DocumentUniqueId are mutually exclusive per task.",
+
+  "Id": 0,
+  "UniqueId": "act-subprocess-example-uuid",
+  "Number": "3",
+  "Text": "Provision equipment and system access",
+  "OwnerId": null,
+  "OwnerText": "IT Support",
+  "IsManuallyNamed": false,
+  "ChildProcessProcedures": {
+    "Task": [
+      {
+        "_comment": "Task that triggers a defined sub-process",
+        "Id": 0,
+        "UniqueId": "task-subprocess-001-uuid",
+        "Number": "3.1",
+        "Text": "Complete hardware provisioning process",
+        "OwnerId": null,
+        "OwnerText": null,
+        "DocumentUniqueId": null,
+        "DocumentName": null,
+        "ProcessUniqueId": "it-hardware-provisioning-uuid",
+        "ProcessName": "IT Hardware Provisioning",
+        "HasNote": false,
+        "Note": null,
+        "IsDecision": false
+      },
+      {
+        "_comment": "Task linking to a separate software access process",
+        "Id": 0,
+        "UniqueId": "task-subprocess-002-uuid",
+        "Number": "3.2",
+        "Text": "Complete software access provisioning process",
+        "OwnerId": null,
+        "OwnerText": null,
+        "DocumentUniqueId": null,
+        "DocumentName": null,
+        "ProcessUniqueId": "software-access-provisioning-uuid",
+        "ProcessName": "Software Access Provisioning",
+        "HasNote": false,
+        "Note": null,
+        "IsDecision": false
+      },
+      {
+        "_comment": "Plain confirmation task after sub-processes complete",
+        "Id": 0,
+        "UniqueId": "task-subprocess-003-uuid",
+        "Number": "3.3",
+        "Text": "Confirm all provisioning is complete with new employee",
+        "OwnerId": null,
+        "OwnerText": null,
+        "DocumentUniqueId": null,
+        "DocumentName": null,
+        "ProcessUniqueId": null,
+        "ProcessName": null,
+        "HasNote": false,
+        "Note": null,
+        "IsDecision": false
+      }
+    ]
+  }
+}

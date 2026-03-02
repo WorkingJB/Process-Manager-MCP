@@ -1,0 +1,65 @@
+{
+  "_comment": "Example of a single activity containing tasks with document links.",
+  "_usage": "Use search_documents to find document UUIDs, then place them in DocumentUniqueId.",
+  "_important": "Document links go at the TASK level, not the activity level. Each task can link to ONE document or ONE sub-process, not both.",
+
+  "Id": 0,
+  "UniqueId": "act-example-uuid-replace-with-real-uuid",
+  "Number": "2",
+  "Text": "Complete compliance documentation",
+  "OwnerId": null,
+  "OwnerText": "Compliance Officer",
+  "IsManuallyNamed": false,
+  "ChildProcessProcedures": {
+    "Task": [
+      {
+        "_comment": "Task with a document link — agent fills DocumentUniqueId from search_documents result",
+        "Id": 0,
+        "UniqueId": "task-example-001-replace-with-real-uuid",
+        "Number": "2.1",
+        "Text": "Complete the Privacy Impact Assessment form",
+        "OwnerId": null,
+        "OwnerText": null,
+        "DocumentUniqueId": "pia-form-document-uuid-from-search",
+        "DocumentName": "Privacy Impact Assessment Form",
+        "ProcessUniqueId": null,
+        "ProcessName": null,
+        "HasNote": false,
+        "Note": null,
+        "IsDecision": false
+      },
+      {
+        "_comment": "Task with a note (HasNote: true, Note contains guidance text)",
+        "Id": 0,
+        "UniqueId": "task-example-002-replace-with-real-uuid",
+        "Number": "2.2",
+        "Text": "Obtain legal sign-off on data handling clauses",
+        "OwnerId": null,
+        "OwnerText": "Legal Counsel",
+        "DocumentUniqueId": null,
+        "DocumentName": null,
+        "ProcessUniqueId": null,
+        "ProcessName": null,
+        "HasNote": true,
+        "Note": "If the supplier is based outside the country, escalate to the Chief Privacy Officer before proceeding.",
+        "IsDecision": false
+      },
+      {
+        "_comment": "Plain task — no document, no subprocess, no note",
+        "Id": 0,
+        "UniqueId": "task-example-003-replace-with-real-uuid",
+        "Number": "2.3",
+        "Text": "File completed forms in the document management system",
+        "OwnerId": null,
+        "OwnerText": null,
+        "DocumentUniqueId": null,
+        "DocumentName": null,
+        "ProcessUniqueId": null,
+        "ProcessName": null,
+        "HasNote": false,
+        "Note": null,
+        "IsDecision": false
+      }
+    ]
+  }
+}
