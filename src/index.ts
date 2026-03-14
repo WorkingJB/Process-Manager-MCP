@@ -489,6 +489,269 @@ Examples:
       required: ['processId', 'processJson'],
     },
   },
+  {
+    name: 'update_process_metadata',
+    description:
+      `Update process-level metadata fields without touching the activity structure.
+
+Use this instead of update_process when you only need to change fields like the process name,
+objective, background, owner, expert, or search keywords. Much more token-efficient than
+passing the full processJson.
+
+Examples:
+- Change the process objective or background text
+- Reassign the process owner or expert (use lookup_user to get numeric IDs)
+- Update search keywords`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process to update (UUID format)',
+        },
+        name: {
+          type: 'string',
+          description: 'New process name/title',
+        },
+        objective: {
+          type: 'string',
+          description: 'New process objective',
+        },
+        background: {
+          type: 'string',
+          description: 'New process background text',
+        },
+        ownerId: {
+          type: 'number',
+          description: 'Numeric user ID for the new process owner (from lookup_user)',
+        },
+        expertId: {
+          type: 'number',
+          description: 'Numeric user ID for the new process expert (from lookup_user)',
+        },
+        searchKeywords: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Replacement search keywords array',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes (appears in version history)',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId'],
+    },
+  },
+  {
+    name: 'add_activity',
+    description:
+      `Add a new activity (step) to an existing process.
+
+Fetches the current process, appends or inserts a new activity, renumbers all activities,
+then saves the updated process. Much more token-efficient than update_process.
+
+Examples:
+- Add a new step at the end of the process
+- Insert a new step after step 2`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process (UUID format)',
+        },
+        text: {
+          type: 'string',
+          description: 'The activity title/label',
+        },
+        insertAfterNumber: {
+          type: 'string',
+          description: 'Insert after the activity with this Number (e.g. "2.0"). Omit to append at the end.',
+        },
+        roleId: {
+          type: 'number',
+          description: 'Role ID for the activity owner. Use 2 for UNASSIGNED.',
+        },
+        roleName: {
+          type: 'string',
+          description: 'Role name paired with roleId (e.g. "UNASSIGNED")',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes (appears in version history)',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId', 'text'],
+    },
+  },
+  {
+    name: 'update_activity',
+    description:
+      `Update specific fields of an existing activity without rebuilding the whole process.
+
+Fetches the current process, modifies the specified activity, then saves. Much more
+token-efficient than update_process. Identify the activity by its Id (preferred) or Number.
+
+Examples:
+- Change an activity's title text
+- Reassign an activity to a different role`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process (UUID format)',
+        },
+        activityId: {
+          type: 'number',
+          description: 'Activity.Id (preferred — stable across renumbering)',
+        },
+        activityNumber: {
+          type: 'string',
+          description: 'Activity.Number e.g. "2.0" (fallback if Id is unknown)',
+        },
+        text: {
+          type: 'string',
+          description: 'New activity title/label',
+        },
+        roleId: {
+          type: 'number',
+          description: 'New role ID for activity ownership',
+        },
+        roleName: {
+          type: 'string',
+          description: 'New role name paired with roleId',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes (appears in version history)',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId'],
+    },
+  },
+  {
+    name: 'remove_activity',
+    description:
+      `Remove an activity (step) from an existing process.
+
+Fetches the current process, removes the specified activity, renumbers remaining activities,
+then saves. Identify the activity by its Id (preferred) or Number.
+
+Examples:
+- Remove step 3 from a process
+- Delete an activity by its Id`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process (UUID format)',
+        },
+        activityId: {
+          type: 'number',
+          description: 'Activity.Id (preferred — stable across renumbering)',
+        },
+        activityNumber: {
+          type: 'string',
+          description: 'Activity.Number e.g. "3.0" (fallback if Id is unknown)',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes (appears in version history)',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId'],
+    },
+  },
+  {
+    name: 'reorder_activities',
+    description:
+      `Reorder the activities in a process by specifying the desired sequence.
+
+Fetches the current process, reorders activities as specified, renumbers them, then saves.
+You must provide ALL existing activity Ids (or Numbers) in the desired new order — partial
+lists are rejected to prevent data loss. Use Activity Ids (not Numbers) when possible,
+as Numbers change after any add/remove operation.
+
+Examples:
+- Move step 3 to be step 1
+- Swap steps 2 and 4`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'The unique ID of the process (UUID format)',
+        },
+        orderedIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'All activity Ids in the desired new order. Must include every existing activity Id.',
+        },
+        orderedNumbers: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'All activity Numbers in the desired new order (e.g. ["3.0","1.0","2.0"]). Alternative to orderedIds.',
+        },
+        changeDescription: {
+          type: 'string',
+          description: 'Description of the changes (appears in version history)',
+        },
+        doPublish: {
+          type: 'boolean',
+          description: 'Whether to publish after saving (default: false)',
+          default: false,
+        },
+        doSubmitForApproval: {
+          type: 'boolean',
+          description: 'Whether to submit for approval after saving (default: false)',
+          default: false,
+        },
+      },
+      required: ['processId'],
+    },
+  },
 ];
 
 // Create MCP server
@@ -546,6 +809,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'update_process':
         return await handleUpdateProcess(args);
+
+      case 'update_process_metadata':
+        return await handleUpdateProcessMetadata(args);
+
+      case 'add_activity':
+        return await handleAddActivity(args);
+
+      case 'update_activity':
+        return await handleUpdateActivity(args);
+
+      case 'remove_activity':
+        return await handleRemoveActivity(args);
+
+      case 'reorder_activities':
+        return await handleReorderActivities(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -1167,6 +1445,436 @@ async function handleUpdateProcess(args: any) {
         type: 'resource',
         resource: prepareJsonResource(result, `promapp://process/${processId}/update`),
       },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Shared helpers for surgical process editing tools
+// ---------------------------------------------------------------------------
+
+function generateUuid(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+async function fetchProcessJson(processId: string): Promise<any> {
+  const result = (await authManager.apiRequest(
+    `/Api/v1/Processes/${processId}`
+  )) as ProcessResponse;
+  return result.processJson;
+}
+
+interface PutOptions {
+  changeDescription?: string;
+  doPublish?: boolean;
+  doSubmitForApproval?: boolean;
+}
+
+async function putProcessJson(
+  processId: string,
+  processJson: any,
+  opts: PutOptions = {}
+): Promise<any> {
+  const normalizedJson = normalizeProcessJsonForPut(processJson);
+  const putBody = {
+    ProcessJson: JSON.stringify(normalizedJson),
+    ChangeDescription: opts.changeDescription || '',
+    DoSubmitForApproval: opts.doSubmitForApproval ?? false,
+    DoPublish: opts.doPublish ?? false,
+    SuppressChangeNotification: true,
+    SharedActivityCollectionEditModel: {
+      ActivitiesToDelete: [],
+      ActivitiesToShare: [],
+      ActivitiesToUnlink: [],
+    },
+    VariantConnectionChangeStates: [],
+  };
+  return authManager.apiRequest(`/Api/v1/Processes/${processId}`, {
+    method: 'PUT',
+    body: putBody,
+  });
+}
+
+/** Renumber all activities so Number = "N.0" and Order = N-1 (0-indexed). */
+function renumberActivities(activities: any[]): void {
+  activities.forEach((a, i) => {
+    a.Number = `${i + 1}.0`;
+    a.Order = i;
+  });
+}
+
+/** Find an activity by Id or Number, throws if not found. */
+function findActivity(
+  activities: any[],
+  activityId?: number,
+  activityNumber?: string
+): { activity: any; index: number } {
+  let index: number;
+  if (activityId !== undefined) {
+    index = activities.findIndex((a) => a.Id === activityId);
+    if (index === -1) {
+      const available = activities.map((a) => `Id ${a.Id} (${a.Number})`).join(', ');
+      throw new Error(
+        `Activity with Id ${activityId} not found. Available activities: ${available}`
+      );
+    }
+  } else if (activityNumber !== undefined) {
+    index = activities.findIndex((a) => a.Number === activityNumber);
+    if (index === -1) {
+      const available = activities.map((a) => `${a.Number} (Id ${a.Id})`).join(', ');
+      throw new Error(
+        `Activity with Number "${activityNumber}" not found. Available: ${available}`
+      );
+    }
+  } else {
+    throw new Error('Either activityId or activityNumber must be provided');
+  }
+  return { activity: activities[index], index };
+}
+
+// ---------------------------------------------------------------------------
+// Surgical process editing tool handlers
+// ---------------------------------------------------------------------------
+
+/**
+ * Handle update_process_metadata tool
+ */
+async function handleUpdateProcessMetadata(args: any) {
+  const processId = args.processId as string;
+  const opts: PutOptions = {
+    changeDescription: args.changeDescription,
+    doPublish: args.doPublish ?? false,
+    doSubmitForApproval: args.doSubmitForApproval ?? false,
+  };
+
+  console.error(`[UPDATE_PROCESS_METADATA] Updating metadata for: ${processId}`);
+
+  const processJson = await fetchProcessJson(processId);
+  const changed: string[] = [];
+
+  if (args.name !== undefined) { processJson.Name = args.name; changed.push('name'); }
+  if (args.objective !== undefined) { processJson.Objective = args.objective; changed.push('objective'); }
+  if (args.background !== undefined) { processJson.Background = args.background; changed.push('background'); }
+  if (args.ownerId !== undefined) { processJson.OwnerId = args.ownerId; changed.push('ownerId'); }
+  if (args.expertId !== undefined) { processJson.ExpertId = args.expertId; changed.push('expertId'); }
+  if (args.searchKeywords !== undefined) {
+    // Store bare array — normalizeProcessJsonForPut wraps it into { SearchKeyword: [...] }
+    processJson.SearchKeywords = args.searchKeywords;
+    changed.push('searchKeywords');
+  }
+
+  if (changed.length === 0) {
+    throw new Error('No metadata fields to update. Provide at least one of: name, objective, background, ownerId, expertId, searchKeywords');
+  }
+
+  const result = await putProcessJson(processId, processJson, opts);
+
+  let output = `# Process Metadata Updated\n\n`;
+  output += `**Process:** ${processJson.Name}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**Fields updated:** ${changed.join(', ')}\n`;
+  output += `**Change Description:** ${opts.changeDescription || '(none)'}\n`;
+  if (opts.doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (opts.doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      { type: 'text', text: output },
+      { type: 'resource', resource: prepareJsonResource(result, `promapp://process/${processId}/update`) },
+    ],
+  };
+}
+
+/**
+ * Handle add_activity tool
+ */
+async function handleAddActivity(args: any) {
+  const processId = args.processId as string;
+  const text = args.text as string;
+  const insertAfterNumber = args.insertAfterNumber as string | undefined;
+  const roleId = args.roleId as number | undefined;
+  const roleName = args.roleName as string | undefined;
+  const opts: PutOptions = {
+    changeDescription: args.changeDescription,
+    doPublish: args.doPublish ?? false,
+    doSubmitForApproval: args.doSubmitForApproval ?? false,
+  };
+
+  console.error(`[ADD_ACTIVITY] Adding activity to process: ${processId}`);
+
+  const processJson = await fetchProcessJson(processId);
+
+  // Ensure activities array exists
+  if (!processJson.ProcessProcedures) {
+    processJson.ProcessProcedures = { Activity: [] };
+  }
+  const activities: any[] = processJson.ProcessProcedures.Activity ?? [];
+  processJson.ProcessProcedures.Activity = activities;
+
+  // Determine insert index
+  let insertIndex: number;
+  if (insertAfterNumber !== undefined) {
+    const afterIndex = activities.findIndex((a) => a.Number === insertAfterNumber);
+    if (afterIndex === -1) {
+      const available = activities.map((a) => a.Number).join(', ');
+      throw new Error(
+        `Activity with Number "${insertAfterNumber}" not found. Available: ${available}`
+      );
+    }
+    insertIndex = afterIndex + 1;
+  } else {
+    insertIndex = activities.length;
+  }
+
+  // Assign a new negative Id that doesn't collide with any existing Ids
+  const minExistingId = activities.length > 0 ? Math.min(...activities.map((a) => a.Id)) : 0;
+  const newId = Math.min(0, minExistingId) - 1;
+
+  const newActivity: any = {
+    Id: newId,
+    UniqueId: generateUuid(),
+    Text: text,
+    Number: '',   // set by renumberActivities
+    Order: 0,     // set by renumberActivities
+    ProcessProcedureType: 7,
+    ChildProcessProcedures: {},
+    Ownerships: {
+      Role: [{ Id: roleId ?? 2, Name: roleName ?? 'UNASSIGNED', IsVirtual: false }],
+    },
+  };
+
+  activities.splice(insertIndex, 0, newActivity);
+  renumberActivities(activities);
+
+  const result = await putProcessJson(processId, processJson, opts);
+  const finalNumber = activities[insertIndex].Number;
+
+  let output = `# Activity Added\n\n`;
+  output += `**Process:** ${processJson.Name}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**New activity:** ${finalNumber} — ${text}\n`;
+  output += `**Total activities:** ${activities.length}\n`;
+  output += `**Change Description:** ${opts.changeDescription || '(none)'}\n`;
+  if (opts.doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (opts.doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      { type: 'text', text: output },
+      { type: 'resource', resource: prepareJsonResource(result, `promapp://process/${processId}/update`) },
+    ],
+  };
+}
+
+/**
+ * Handle update_activity tool
+ */
+async function handleUpdateActivity(args: any) {
+  const processId = args.processId as string;
+  const activityId = args.activityId as number | undefined;
+  const activityNumber = args.activityNumber as string | undefined;
+  const opts: PutOptions = {
+    changeDescription: args.changeDescription,
+    doPublish: args.doPublish ?? false,
+    doSubmitForApproval: args.doSubmitForApproval ?? false,
+  };
+
+  if (activityId === undefined && activityNumber === undefined) {
+    throw new Error('Either activityId or activityNumber must be provided');
+  }
+
+  console.error(`[UPDATE_ACTIVITY] Updating activity in process: ${processId}`);
+
+  const processJson = await fetchProcessJson(processId);
+  const activities: any[] = processJson.ProcessProcedures?.Activity ?? [];
+
+  const { activity } = findActivity(activities, activityId, activityNumber);
+  const changed: string[] = [];
+
+  if (args.text !== undefined) { activity.Text = args.text; changed.push('text'); }
+  if (args.roleId !== undefined) {
+    activity.Ownerships = {
+      ...activity.Ownerships,
+      Role: [{ Id: args.roleId, Name: args.roleName ?? '', IsVirtual: false }],
+    };
+    changed.push('role');
+  }
+
+  if (changed.length === 0) {
+    throw new Error('No activity fields to update. Provide at least one of: text, roleId');
+  }
+
+  const result = await putProcessJson(processId, processJson, opts);
+
+  let output = `# Activity Updated\n\n`;
+  output += `**Process:** ${processJson.Name}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**Activity:** ${activity.Number} — ${activity.Text}\n`;
+  output += `**Fields updated:** ${changed.join(', ')}\n`;
+  output += `**Change Description:** ${opts.changeDescription || '(none)'}\n`;
+  if (opts.doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (opts.doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      { type: 'text', text: output },
+      { type: 'resource', resource: prepareJsonResource(result, `promapp://process/${processId}/update`) },
+    ],
+  };
+}
+
+/**
+ * Handle remove_activity tool
+ */
+async function handleRemoveActivity(args: any) {
+  const processId = args.processId as string;
+  const activityId = args.activityId as number | undefined;
+  const activityNumber = args.activityNumber as string | undefined;
+  const opts: PutOptions = {
+    changeDescription: args.changeDescription,
+    doPublish: args.doPublish ?? false,
+    doSubmitForApproval: args.doSubmitForApproval ?? false,
+  };
+
+  if (activityId === undefined && activityNumber === undefined) {
+    throw new Error('Either activityId or activityNumber must be provided');
+  }
+
+  console.error(`[REMOVE_ACTIVITY] Removing activity from process: ${processId}`);
+
+  const processJson = await fetchProcessJson(processId);
+  const activities: any[] = processJson.ProcessProcedures?.Activity ?? [];
+
+  const { activity, index } = findActivity(activities, activityId, activityNumber);
+  const removedText = activity.Text;
+  const removedNumber = activity.Number;
+
+  activities.splice(index, 1);
+  renumberActivities(activities);
+
+  const result = await putProcessJson(processId, processJson, opts);
+
+  let output = `# Activity Removed\n\n`;
+  output += `**Process:** ${processJson.Name}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**Removed:** ${removedNumber} — ${removedText}\n`;
+  output += `**Remaining activities:** ${activities.length}\n`;
+  if (activities.length === 0) {
+    output += `**Warning:** The process now has no activities.\n`;
+  }
+  output += `**Change Description:** ${opts.changeDescription || '(none)'}\n`;
+  if (opts.doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (opts.doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      { type: 'text', text: output },
+      { type: 'resource', resource: prepareJsonResource(result, `promapp://process/${processId}/update`) },
+    ],
+  };
+}
+
+/**
+ * Handle reorder_activities tool
+ */
+async function handleReorderActivities(args: any) {
+  const processId = args.processId as string;
+  const orderedIds = args.orderedIds as number[] | undefined;
+  const orderedNumbers = args.orderedNumbers as string[] | undefined;
+  const opts: PutOptions = {
+    changeDescription: args.changeDescription,
+    doPublish: args.doPublish ?? false,
+    doSubmitForApproval: args.doSubmitForApproval ?? false,
+  };
+
+  if (!orderedIds && !orderedNumbers) {
+    throw new Error('Either orderedIds or orderedNumbers must be provided');
+  }
+
+  console.error(`[REORDER_ACTIVITIES] Reordering activities in process: ${processId}`);
+
+  const processJson = await fetchProcessJson(processId);
+  const activities: any[] = processJson.ProcessProcedures?.Activity ?? [];
+
+  // Validate the provided list is a complete, exact match of existing activities
+  if (orderedIds) {
+    const existingIds = new Set(activities.map((a) => a.Id));
+    const providedIds = new Set(orderedIds);
+    const missing = [...existingIds].filter((id) => !providedIds.has(id));
+    const extra = [...providedIds].filter((id) => !existingIds.has(id));
+    if (missing.length > 0 || extra.length > 0) {
+      throw new Error(
+        `orderedIds must contain exactly all existing activity Ids.\n` +
+        (missing.length > 0 ? `Missing Ids: ${missing.join(', ')}\n` : '') +
+        (extra.length > 0 ? `Unknown Ids: ${extra.join(', ')}` : '')
+      );
+    }
+    const reordered = orderedIds.map((id) => activities.find((a) => a.Id === id)!);
+    renumberActivities(reordered);
+    processJson.ProcessProcedures.Activity = reordered;
+  } else {
+    const existingNumbers = new Set(activities.map((a) => a.Number));
+    const providedNumbers = new Set(orderedNumbers!);
+    const missing = [...existingNumbers].filter((n) => !providedNumbers.has(n));
+    const extra = [...providedNumbers].filter((n) => !existingNumbers.has(n));
+    if (missing.length > 0 || extra.length > 0) {
+      throw new Error(
+        `orderedNumbers must contain exactly all existing activity Numbers.\n` +
+        (missing.length > 0 ? `Missing: ${missing.join(', ')}\n` : '') +
+        (extra.length > 0 ? `Unknown: ${extra.join(', ')}` : '')
+      );
+    }
+    const reordered = orderedNumbers!.map((num) => activities.find((a) => a.Number === num)!);
+    renumberActivities(reordered);
+    processJson.ProcessProcedures.Activity = reordered;
+  }
+
+  const result = await putProcessJson(processId, processJson, opts);
+  const finalActivities: any[] = processJson.ProcessProcedures.Activity;
+
+  let output = `# Activities Reordered\n\n`;
+  output += `**Process:** ${processJson.Name}\n`;
+  output += `**Process ID:** ${processId}\n`;
+  output += `**New order:**\n`;
+  finalActivities.forEach((a) => {
+    output += `  ${a.Number} — ${a.Text}\n`;
+  });
+  output += `**Change Description:** ${opts.changeDescription || '(none)'}\n`;
+  if (opts.doPublish) {
+    output += `**Action:** Published\n`;
+  } else if (opts.doSubmitForApproval) {
+    output += `**Action:** Submitted for approval\n`;
+  } else {
+    output += `**Action:** Saved as draft\n`;
+  }
+
+  return {
+    content: [
+      { type: 'text', text: output },
+      { type: 'resource', resource: prepareJsonResource(result, `promapp://process/${processId}/update`) },
     ],
   };
 }
